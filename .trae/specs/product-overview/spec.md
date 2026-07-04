@@ -17,6 +17,16 @@
 ## Mission
 > 做 3 秒内完成需求的 Pokémon 随机工具，且结果值得分享。
 
+## 产品定位统一
+首页定位 = **Random Pokemon Picker**（核心关键词 random pokemon picker）。
+- 首页默认行为 = 抽 6 只（Count filter 默认 6，可切换 1/3/6）
+- 工具页 /random-pokemon-team-generator 服务关键词 random pokemon team generator（独立 URL，强制 6 只）
+- 工具页 /pokemon-starter-picker 服务关键词 pokemon starter picker（独立 URL，强制 starter=true）
+
+**禁止的行为：**
+- 首页 H1 写 "Team Generator"（与工具页定位混淆）
+- README 或外部描述把首页称为 "Team Picker"
+
 ## Product Principles（永不跑偏的锚）
 所有功能决策 SHALL 通过以下 6 条原则检验。任一不满足 = 不做。
 
@@ -38,7 +48,7 @@
 | 用户群 | 意图 | 占比预估 | Phase 1 是否覆盖 |
 | --- | --- | --- | --- |
 | Casual 随机玩家 | "给我随机一只 Pokémon" | 60% | ✅ 首页主流程 |
-| Team builder | "给我随机一队 6 只" | 20% | ✅ 首页次要 CTA + /random-pokemon-team-generator |
+| Team builder | "给我随机一队 6 只" | 20% | ✅ 首页 Count=6 + /random-pokemon-team-generator |
 | Starter 选择困难者 | "御三家选哪个" | 10% | ✅ /pokemon-starter-picker |
 | Nuzlocke / 挑战者 | "随机挑战规则生成" | 5% | ❌ Phase 2 |
 | 内容创作者 | "art prompt / drawing prompt" | 5% | ❌ Phase 2 |
@@ -50,7 +60,7 @@
 - 首页 3 秒完成需求（核心原则）
 - 首页只做一件事：随机生成
 - Filter 采用 progressive disclosure（basic 默认 + advanced 折叠）
-- 文案品牌化："Pick a Pokémon" 而非 "Generate One"
+- 文案品牌化："Pick Random Pokémon" 而非 "Generate One"
 - **优先级最高**：当与分享功能冲突时，分享让步
 
 ### Driver 2: 隐式分享卡片
@@ -136,7 +146,7 @@
 #### Scenario: 首次用户完成核心需求
 - **WHEN** 首次用户访问 `/`
 - **THEN** 看到 Hero + 主 CTA
-- **AND** 点击后立即看到 1 张结果卡片
+- **AND** 点击后立即看到 6 张结果卡片
 - **AND** 全程 ≤ 3 秒
 
 ### Requirement: Phase 1 范围
@@ -161,11 +171,34 @@ Phase 1 SHALL 交付 7 个 URL（首页 + 2 工具页 + 4 静态页），无 blo
 - H1/页面标题用 PokePicker 品牌体系（如 "Random Pokemon Picker — PokePicker"）
 - 两者解耦
 
+## Resolved Decisions
+
+以下 4 个决策已由用户拍板，所有子 spec 须保持一致：
+
+### Decision 1: 默认数量 = 6 只
+- **决策：** 首页默认抽 6 只 Pokémon，Count filter 可切换 1/3/6（默认 6）。Count 切换放在 basic filters（不藏 advanced）。
+- **理由：** 6 只视觉效果最好，符合 Team Challenge / Nuzlocke 主场景，更有分享价值。
+- **影响 spec：** homepage-ui / filter-system
+
+### Decision 2: 分享图尺寸 = 1200x630（OG）+ 1080x1080（Share）
+- **决策：** 两个尺寸，用途不混用。1200x630 = Open Graph 标准（影响 SEO 和社交分享预览）；1080x1080 = 用户点击 Share 后生成的队伍图片。
+- **理由：** 1200x630 是 OG 标准影响分享预览，1080x1080 用于用户生成的队伍图，二者职责不同。
+- **影响 spec：** result-card-design
+
+### Decision 3: API 真实现 PokeAPI
+- **决策：** 直接用 PokeAPI（免费、稳定、数据完整），加一层封装 `lib/pokeapi/client.ts`，以后换数据源不用改业务代码。已实现。
+- **理由：** PokeAPI 免费稳定、覆盖全世代；封装层保证未来可替换数据源。
+- **影响 spec：** tech-stack-and-architecture
+
+### Decision 4: 不做 Cookie 弹窗
+- **决策：** V1 只用 GA4 匿名分析，不投广告、不做营销 Cookie。等以后接入 Google Ads / Facebook Pixel 再补 cookie 同意弹窗。
+- **理由：** 符合 Product Principle #4（不出现弹窗）。V1 无广告无营销 Cookie，无需同意弹窗。
+- **影响 spec：** tech-stack-and-architecture
+
 ## Open Questions
 1. Phase 1 工具页选 2 个还是 1 个？（当前推荐 2 个：team-generator + starter-picker）
-2. **默认数量 1 vs 6 vs 3 只** — 不拍板，等用户做完 `random pokemon picker` / `random pokemon generator` / `pokemon team generator` 等关键词的搜索意图拆解后再定（基于数据，不凭感觉）
-3. 隐式分享卡片的分享图生成方式（client-side canvas / server-side OG image）？留给 result-card-design spec
-4. 多语言策略留给 Phase 3 还是提前规划？留给 seo-strategy spec
+2. 隐式分享卡片的分享图生成方式（client-side canvas / server-side OG image）？尺寸已决策（见 Resolved Decisions #2），生成方式待定。留给 result-card-design spec
+3. 多语言策略留给 Phase 3 还是提前规划？留给 seo-strategy spec
 
 ## Related Specs
 - [sitemap-and-url-strategy](../sitemap-and-url-strategy/spec.md) — URL 结构 + 路由

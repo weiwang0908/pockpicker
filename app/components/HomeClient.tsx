@@ -5,6 +5,7 @@ import Filters from './Filters';
 import { PokemonCardList } from './PokemonCardList';
 import { defaultFilter, type FilterOptions } from './Filters';
 import { getRandomPokemon, pickSprite } from '@/lib/pokeapi/client';
+import { trackEvent } from '@/app/lib/analytics';
 import type {
   FilterOptions as ApiFilterOptions,
   Pokemon as ApiPokemon,
@@ -55,7 +56,6 @@ interface HomeClientProps {
 export default function HomeClient({ faqItems }: HomeClientProps) {
   const [filter, setFilter] = useState<FilterOptions>(defaultFilter);
   const [results, setResults] = useState<CardPokemon[]>([]);
-  const [isTeamMode, setIsTeamMode] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [resultKey, setResultKey] = useState(0);
 
@@ -64,11 +64,13 @@ export default function HomeClient({ faqItems }: HomeClientProps) {
   const hasStartedRef = useRef(false);
   const reqIdRef = useRef(0);
 
+  // teamMode is derived from count, not separate state
+  const isTeamMode = filter.count >= 3;
+
   const fetchResults = useCallback(
-    async (f: FilterOptions, teamMode: boolean): Promise<CardPokemon[]> => {
+    async (f: FilterOptions): Promise<CardPokemon[]> => {
       const apiFilter = toApiFilter(f);
-      const count = teamMode ? 6 : f.count;
-      const raw = await getRandomPokemon(apiFilter, count);
+      const raw = await getRandomPokemon(apiFilter, f.count);
       return raw.map((p) => toCardPokemon(p, f.shiny));
     },
     [],
@@ -77,12 +79,12 @@ export default function HomeClient({ faqItems }: HomeClientProps) {
   // Single source of truth for generation. A request token guards against
   // stale writes when filters change faster than the network resolves.
   const runGenerate = useCallback(
-    async (f: FilterOptions, teamMode: boolean, opts: { scroll: boolean }) => {
+    async (f: FilterOptions, opts: { scroll: boolean }) => {
       const id = ++reqIdRef.current;
       setIsGenerating(true);
       if (opts.scroll) scrollPendingRef.current = true;
       try {
-        const r = await fetchResults(f, teamMode);
+        const r = await fetchResults(f);
         if (id !== reqIdRef.current) return; // superseded
         setResults(r);
         setResultKey((k) => k + 1);
@@ -105,20 +107,34 @@ export default function HomeClient({ faqItems }: HomeClientProps) {
     return () => cancelAnimationFrame(id);
   }, [results, resultKey]);
 
-  const handlePick = (teamMode: boolean) => {
-    setIsTeamMode(teamMode);
+  const handlePick = () => {
     hasStartedRef.current = true;
-    void runGenerate(filter, teamMode, { scroll: true });
+    trackEvent('pick_pokemon', {
+      count: filter.count,
+      generation: filter.generation ?? 'all',
+      type: filter.type ?? 'all',
+      legendary: filter.legendary,
+      shiny: filter.shiny,
+      starter: filter.starter,
+    });
+    void runGenerate(filter, { scroll: true });
   };
 
   const handleReroll = () => {
-    void runGenerate(filter, isTeamMode, { scroll: false });
+    trackEvent('reroll', { count: filter.count });
+    void runGenerate(filter, { scroll: false });
   };
 
   const handleFilterChange = (next: FilterOptions) => {
     setFilter(next);
     if (!hasStartedRef.current) return; // don't auto-generate before first pick
-    void runGenerate(next, isTeamMode, { scroll: false });
+    trackEvent('filter_change', {
+      field: 'mixed',
+      generation: next.generation ?? 'all',
+      type: next.type ?? 'all',
+      count: next.count,
+    });
+    void runGenerate(next, { scroll: false });
   };
 
   return (
@@ -138,27 +154,21 @@ export default function HomeClient({ faqItems }: HomeClientProps) {
           Random Pokemon Picker
         </h1>
         <p className="mt-5 max-w-xl text-base text-muted sm:text-lg">
-          Generate a random Pokémon instantly. Perfect for challenges, team
-          building and fun.
+          Generate a random Pokémon from all 1025 species in one click.
         </p>
         <div className="mt-9 flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:justify-center">
           <button
             type="button"
-            onClick={() => handlePick(false)}
+            onClick={handlePick}
             disabled={isGenerating}
             className="inline-flex w-full max-w-md items-center justify-center rounded-full bg-brand px-8 py-3.5 text-base font-semibold text-white shadow-sm transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
           >
-            {isGenerating ? 'Picking…' : 'Pick a Pokémon'}
-          </button>
-          <button
-            type="button"
-            onClick={() => handlePick(true)}
-            disabled={isGenerating}
-            className="inline-flex w-full max-w-md items-center justify-center rounded-full border border-zinc-200 bg-surface px-8 py-3.5 text-base font-semibold text-foreground transition-colors hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-          >
-            Pick a Team
+            {isGenerating ? 'Picking…' : 'Pick Random Pokémon'}
           </button>
         </div>
+        <p className="mt-3 text-xs text-muted">
+          Default: 6 Pokémon · Use the Count filter below to pick 1 or 3
+        </p>
       </section>
 
       {/* 2. Result */}
@@ -284,16 +294,16 @@ export default function HomeClient({ faqItems }: HomeClientProps) {
             🎲 PokePicker
           </div>
           <nav className="flex gap-5 text-sm text-muted">
-            <a href="#" className="transition-colors hover:text-brand">
+            <a href="/about" className="transition-colors hover:text-brand">
               About
             </a>
-            <a href="#" className="transition-colors hover:text-brand">
+            <a href="/privacy" className="transition-colors hover:text-brand">
               Privacy
             </a>
-            <a href="#" className="transition-colors hover:text-brand">
+            <a href="/contact" className="transition-colors hover:text-brand">
               Contact
             </a>
-            <a href="#" className="transition-colors hover:text-brand">
+            <a href="/api" className="transition-colors hover:text-brand">
               API
             </a>
           </nav>
@@ -330,13 +340,13 @@ function ComingSoonCard({ title }: { title: string }) {
         Coming soon
       </div>
       <div className="mt-4">
-        <NotifyMe />
+        <NotifyMe toolName={title} />
       </div>
     </div>
   );
 }
 
-function NotifyMe() {
+function NotifyMe({ toolName }: { toolName: string }) {
   const [done, setDone] = useState(false);
   if (done) {
     return (
@@ -349,6 +359,7 @@ function NotifyMe() {
     <form
       onSubmit={(e) => {
         e.preventDefault();
+        trackEvent('notify_me_subscribe', { tool: toolName });
         setDone(true);
       }}
       className="flex flex-col gap-2"

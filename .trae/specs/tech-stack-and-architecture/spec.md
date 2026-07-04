@@ -23,11 +23,12 @@
 - React island 增加复杂度
 - Next.js 生态更熟悉（假设）
 
-### 数据源: PokeAPI
+### 数据源: PokeAPI（已实现）
 - 公开 REST API：https://pokeapi.co/
 - 覆盖 1025+ Pokémon 全世代
 - 不需要 API key
 - 限流：300 req/min（足够）
+- **封装层**：`lib/pokeapi/client.ts`，业务代码只依赖 client，未来换数据源无需改业务代码（已实现）
 
 **数据缓存策略：**
 - 首次请求时 cache 到 Vercel KV 或 Redis
@@ -68,6 +69,11 @@
 - 首页 CLS（Cumulative Layout Shift）≤ 0.1
 - 工具页 LCP ≤ 2s
 
+## Cookie & Analytics
+- **V1 不做 Cookie 同意弹窗**：V1 只用 GA4 匿名分析，不投广告、不做营销 Cookie。等以后接入 Google Ads / Facebook Pixel 再补 cookie 同意弹窗。
+- 符合 Product Principle #4（不出现弹窗）。
+- 详细埋点见 analytics-and-metrics spec。
+
 ## ADDED Requirements
 
 ### Requirement: 技术栈
@@ -84,6 +90,10 @@ PokeAPI 数据 SHALL 缓存到 Vercel KV，TTL 24h。
 1. 是否需要 Vercel KV（付费）？或用 in-memory cache？
 2. 分享卡片 canvas 生成是否影响性能？
 3. 是否需要图像优化（next/image）？
+
+## Resolved Decisions
+- **API 真实现 PokeAPI**：直接用 PokeAPI + 封装层 `lib/pokeapi/client.ts`，业务代码只依赖 client，未来换数据源无需改业务代码。已实现（见 product-overview Resolved Decisions #3）
+- **不做 Cookie 弹窗**：V1 只用 GA4 匿名分析，无广告无营销 Cookie，不做 cookie 同意弹窗；接入 Google Ads / Facebook Pixel 时再补（见 product-overview Resolved Decisions #4）
 
 ## Related Specs
 - [product-overview](../product-overview/spec.md) — 技术栈决策来源

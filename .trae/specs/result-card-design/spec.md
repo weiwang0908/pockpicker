@@ -98,8 +98,11 @@
 
 **生成方式：**
 - 客户端 canvas 生成（html2canvas 或类似库）
-- 分辨率：1080x1080（Instagram 友好）+ 1200x630（OG image 复用）— pending Discussion
 - 格式：PNG
+
+**分享图尺寸（双尺寸，用途不混用）：**
+- **1200x630（OG）**：Open Graph 标准尺寸，用于社交分享预览 / SEO meta og:image，影响链接卡片的展示
+- **1080x1080（Share）**：用户点击 Share 按钮后生成的队伍图片，Instagram / 社媒正方形友好
 
 ## Card Reveal Animation（抽卡式体验）
 点击主 CTA 后 SHALL 触发"抽卡式"动画，总时长 ≤ 1 秒：
@@ -107,14 +110,15 @@
 1. **按钮反馈（100ms）**：主 CTA 按钮轻微缩小（press 反馈）
 2. **Loading（500ms）**：显示简洁 loading 指示（如旋转的 Pokéball 图标或骨架屏）
 3. **卡片逐个弹出（400ms）**：
-   - 默认 1 只：卡片从下方滑入 + 淡入
-   - Team 模式（6 只）：卡片逐个出现（每张间隔 50ms），最后自动滚动到第一张
+   - 默认 6 只：卡片逐个出现（每张间隔 50ms），最后自动滚动到第一张
+   - Count=1：卡片从下方滑入 + 淡入
+   - Count=3：卡片逐个出现（间隔 50ms）
 4. **总时长 ≤ 1 秒**（保住 3 秒原则）
 
 理由：竞品 #1-9 全部是"点击 → 刷新 → 图片出现"，没人卷体验。抽卡式动画 = 差异化 + Google 停留时间提升。
 
 #### Scenario: 首次用户点击主 CTA
-- **WHEN** 用户点 "Pick a Pokémon"
+- **WHEN** 用户点 "Pick Random Pokémon"
 - **THEN** 按钮轻微缩小（100ms）
 - **AND** 显示 loading（500ms）
 - **AND** 卡片滑入 + 淡入（400ms）
@@ -151,7 +155,7 @@
 点 Share 按钮才生成带装饰的分享图。
 - 装饰：属性配色渐变背景 + 边框 + watermark
 - 生成方式：客户端 canvas（html2canvas 或类似）
-- 分辨率：1080x1080
+- 分辨率：1200x630（OG）+ 1080x1080（Share），用途不混用
 - 格式：PNG
 - 不污染默认显示
 
@@ -163,12 +167,14 @@
 
 ## Open Questions
 1. 单属性 vs 双属性 Pokémon 的配色处理？（推荐用主属性，副属性显示在文本）
-2. 分享图尺寸：1080x1080（IG）vs 1200x630（OG）vs 都生成？
-3. Share 按钮在桌面端 hover 还是常驻？（推荐常驻，但小）
-4. canvas 生成性能（多卡片时）？
-5. **默认卡片底色：纯白 vs 米白/奶白**（Gemini 建议）— 米白更高级但偏离 Apple 极简纯白
-6. **分享卡片背景：扁平渐变 vs 毛玻璃（Glassmorphism）**（Gemini 提问）— 扁平更干净，毛玻璃更高级但可能过时
-7. **噪点质感是否加**（Gemini 建议）— 避免"网页截图"感，但增加设计成本
+2. Share 按钮在桌面端 hover 还是常驻？（推荐常驻，但小）
+3. canvas 生成性能（多卡片时）？
+4. **默认卡片底色：纯白 vs 米白/奶白**（Gemini 建议）— 米白更高级但偏离 Apple 极简纯白
+5. **分享卡片背景：扁平渐变 vs 毛玻璃（Glassmorphism）**（Gemini 提问）— 扁平更干净，毛玻璃更高级但可能过时
+6. **噪点质感是否加**（Gemini 建议）— 避免"网页截图"感，但增加设计成本
+
+## Resolved Decisions
+- **分享图尺寸 = 1200x630（OG）+ 1080x1080（Share）**：两个尺寸用途不混用。1200x630 = Open Graph 标准（SEO/社交分享预览），1080x1080 = 用户点 Share 生成的队伍图片（见 product-overview Resolved Decisions #2）
 
 ## Related Specs
 - [homepage-ui](../homepage-ui/spec.md) — 卡片在结果区的位置

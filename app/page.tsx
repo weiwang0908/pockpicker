@@ -2,20 +2,24 @@ import type { Metadata } from 'next';
 import HomeClient from './components/HomeClient';
 
 export const metadata: Metadata = {
-  title: 'Random Pokemon Picker — Pick a Pokémon Instantly | PokePicker',
+  title: 'Random Pokemon Picker — Pick Any of 1025 Pokémon in One Click | PokePicker',
   description:
-    'Generate a random Pokémon instantly. Perfect for challenges, team building and fun. Free random Pokemon picker with generation, type and legendary filters.',
+    'Generate a random Pokémon from all 1025 species in one click. Filter by generation, type, starter or legendary. Free, no signup. Perfect for team building, Nuzlocke challenges and art prompts.',
   alternates: { canonical: '/' },
 };
 
 const FAQ_ITEMS: { q: string; a: string }[] = [
   {
     q: 'What is a random Pokemon picker?',
-    a: 'A free tool that picks a Pokémon at random — great for challenges, team building and fun.',
+    a: 'A free tool that picks a Pokémon at random from all 1025 species — great for challenges, team building and fun.',
   },
   {
     q: 'How does this random Pokemon picker work?',
-    a: 'Randomly selects from all 1025 Pokémon via PokeAPI. Filter by generation, type or legendary.',
+    a: 'It randomly selects from all 1025 Pokémon via PokeAPI. Filter by generation, type, starter or legendary status.',
+  },
+  {
+    q: 'How many Pokémon are included?',
+    a: 'All 1025 Pokémon across generations 1 to 9 are included. Pick from the full Pokédex or filter to a specific generation.',
   },
   {
     q: 'Can I pick a specific generation?',
@@ -24,6 +28,14 @@ const FAQ_ITEMS: { q: string; a: string }[] = [
   {
     q: 'Can I exclude legendaries?',
     a: 'Yes. Set Legendary to Any to include them, or Only to pick exclusively from legendary Pokémon.',
+  },
+  {
+    q: 'Can I generate only Gen 1 Pokémon?',
+    a: 'Yes. Select Gen 1 in the Generation filter and every pick will come from the original 151 Pokémon.',
+  },
+  {
+    q: 'Can I share my generated Pokémon?',
+    a: 'Yes. Click the Share button on any result card to download a shareable image with the Pokémon art, type and Pokédex number.',
   },
   {
     q: 'Is it free to use?',

@@ -30,6 +30,23 @@ describe('Filters 组件', () => {
 
       expect(screen.getByText('Advanced')).toBeInTheDocument()
     })
+
+    it('渲染 Count 标签和 chips 1/3/6', () => {
+      render(<Filters filter={defaultFilter} onChange={vi.fn()} />)
+
+      expect(screen.getByText('Count')).toBeInTheDocument()
+      // Count 区域内的三个 chip
+      const countSection = screen.getByText('Count').parentElement!
+      expect(
+        within(countSection).getByRole('button', { name: '1' }),
+      ).toBeInTheDocument()
+      expect(
+        within(countSection).getByRole('button', { name: '3' }),
+      ).toBeInTheDocument()
+      expect(
+        within(countSection).getByRole('button', { name: '6' }),
+      ).toBeInTheDocument()
+    })
   })
 
   describe('点击 Generation chip 触发 onChange', () => {
@@ -125,14 +142,13 @@ describe('Filters 组件', () => {
   })
 
   describe('Advanced 折叠 / 展开', () => {
-    it('默认折叠（不显示 Legendary / Shiny / Starter / Count）', () => {
+    it('默认折叠（不显示 Legendary / Shiny / Starter）', () => {
       render(<Filters filter={defaultFilter} onChange={vi.fn()} />)
 
-      // Advanced 内容里的 label 不应出现
+      // Advanced 内容里的 label 不应出现（Count 已移至 basic filters）
       expect(screen.queryByText('Legendary')).not.toBeInTheDocument()
       expect(screen.queryByText('Shiny')).not.toBeInTheDocument()
       expect(screen.queryByText('Starter')).not.toBeInTheDocument()
-      expect(screen.queryByText('Count')).not.toBeInTheDocument()
     })
 
     it('点击 Advanced 按钮展开', async () => {
@@ -145,7 +161,6 @@ describe('Filters 组件', () => {
       expect(screen.getByText('Legendary')).toBeInTheDocument()
       expect(screen.getByText('Shiny')).toBeInTheDocument()
       expect(screen.getByText('Starter')).toBeInTheDocument()
-      expect(screen.getByText('Count')).toBeInTheDocument()
     })
 
     it('再次点击 Advanced 折叠', async () => {

@@ -15,6 +15,7 @@ Filter 是首页体验的关键差异化点。9 个竞品中 2 个堆功能（12
 Filter SHALL 分两层：
 
 **Basic filters（默认显示）：**
+- Count（1 / 3 / 6，默认 6）
 - Generation（Gen 1-9 chips，单选 + All）
 - Type（18 个属性图标，单选 + All）
 
@@ -22,7 +23,6 @@ Filter SHALL 分两层：
 - Legendary（三态：Any / Include / Only）
 - Shiny（二态：Off / On）
 - Starter（二态：Off / On）
-- Count（1 / 3 / 6）
 
 **不进 Phase 1 的维度（Phase 2 再考虑）：**
 - Regions / Forms（Mega/Gigantamax/Regional Variants）/ Evolution / Gender / Minimum Stats / Natures / Ability / Display
@@ -35,7 +35,7 @@ Filter SHALL 分两层：
 
 #### Scenario: Advanced filter 展开
 - **WHEN** 用户点 "Advanced" 按钮
-- **THEN** 展开 Legendary / Shiny / Starter / Count 等选项
+- **THEN** 展开 Legendary / Shiny / Starter 等选项
 - **AND** 改任意选项后结果自动重新生成
 
 ### Requirement: Filter 变更行为
@@ -62,8 +62,11 @@ Filter SHALL 分两层：
 
 ## Open Questions
 1. Type filter 单选 vs 多选？（推荐单选，简单；多选留给 Phase 2）
-2. Count 在 basic 还是 advanced？（推荐 advanced，首次用户不需要）
-3. 移动端 sheet vs 下拉？（推荐 sheet，移动端 UX 更好）
+2. 移动端 sheet vs 下拉？（推荐 sheet，移动端 UX 更好）
+
+## Resolved Decisions
+- **Count 在 basic 还是 advanced？** → basic（1/3/6，默认 6）。理由：6 只是主场景，Count 切换不藏 advanced（见 product-overview Resolved Decisions #1）
+- **默认数量 = 6 只**：Count filter 默认 6
 
 ## Related Specs
 - [homepage-ui](../homepage-ui/spec.md) — Filter 区块在首页的位置

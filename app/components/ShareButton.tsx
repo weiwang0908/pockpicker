@@ -9,6 +9,7 @@ import {
   getTypeMeta,
   Pokemon,
 } from "@/app/lib/type-data";
+import { trackEvent } from "@/app/lib/analytics";
 
 export interface ShareButtonProps {
   pokemon: Pokemon;
@@ -28,6 +29,7 @@ export function ShareButton({ pokemon }: ShareButtonProps) {
   const handleShare = useCallback(async () => {
     if (generating || !cardRef.current) return;
     setGenerating(true);
+    trackEvent("share_click", { pokemon: pokemon.name, id: pokemon.id });
     try {
       // html2canvas on the off-screen 1080x1080 share card.
       // Share card uses ONLY inline hex/rgb styles (no Tailwind utilities)
@@ -50,17 +52,18 @@ export function ShareButton({ pokemon }: ShareButtonProps) {
     } finally {
       setGenerating(false);
     }
-  }, [generating]);
+  }, [generating, pokemon.name, pokemon.id]);
 
   const handleDownload = useCallback(() => {
     if (!dataUrl) return;
+    trackEvent("share_download", { pokemon: pokemon.name, id: pokemon.id });
     const link = document.createElement("a");
     link.href = dataUrl;
     link.download = `${pokemon.name.toLowerCase()}-pokepicker.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  }, [dataUrl, pokemon.name]);
+  }, [dataUrl, pokemon.name, pokemon.id]);
 
   const handleCopy = useCallback(async () => {
     if (!dataUrl) return;
@@ -70,11 +73,12 @@ export function ShareButton({ pokemon }: ShareButtonProps) {
         new ClipboardItem({ "image/png": blob }),
       ]);
       setCopyState("ok");
+      trackEvent("share_copy", { pokemon: pokemon.name, id: pokemon.id });
     } catch (err) {
       console.error("Failed to copy image:", err);
       setCopyState("err");
     }
-  }, [dataUrl]);
+  }, [dataUrl, pokemon.name, pokemon.id]);
 
   return (
     <>

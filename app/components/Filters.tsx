@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import GenerationFilter from './GenerationFilter';
 import TypeFilter from './TypeFilter';
+import CountFilter from './CountFilter';
 import AdvancedFilters from './AdvancedFilters';
 
 export interface FilterOptions {
@@ -20,7 +21,7 @@ export const defaultFilter: FilterOptions = {
   legendary: 'any',
   shiny: false,
   starter: false,
-  count: 1,
+  count: 6,
 };
 
 interface FiltersProps {
@@ -35,6 +36,10 @@ function FiltersContent({
 }: FiltersProps & { defaultAdvancedOpen: boolean }) {
   return (
     <div className="flex flex-col gap-5">
+      <CountFilter
+        value={filter.count}
+        onChange={(count) => onChange({ ...filter, count })}
+      />
       <GenerationFilter
         value={filter.generation}
         onChange={(generation) => onChange({ ...filter, generation })}

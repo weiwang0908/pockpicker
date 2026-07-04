@@ -5,8 +5,8 @@
 
 ## What Changes
 - 锁定首页 5 屏结构（Hero / Result / Filters / Popular Tools / FAQ + Footer）
-- 锁定主 CTA + 次要切换双 CTA 方案
-- 锁定默认数量 = 1 只
+- 锁定单一主 CTA 方案（Pick Random Pokémon，无次要 CTA）
+- 锁定默认数量 = 6 只（Count filter 默认 6，可切换 1/3/6）
 - 锁定 Filters 位置 = 结果下方 + progressive disclosure
 - 锁定结果卡片默认极简 + 隐式分享按钮
 
@@ -21,17 +21,16 @@
 │                                     │
 │  Generate a random Pokémon instantly │
 │  Perfect for challenges, team       │
-│  building and fun.                 │
+│  building and fun.                  │
 │                                     │
-│       [ Pick a Pokémon ]            │  ← 主 CTA，默认 1 只
-│         Pick a Team                 │  ← 次要切换，6 只
+│     [ Pick Random Pokémon ]         │  ← 单一主 CTA，默认 6 只
 │                                     │
 └─────────────────────────────────────┘
 ```
 
 - H1 = "Random Pokemon Picker"（含主关键词）
-- 主 CTA：「Pick a Pokémon」- 大按钮、醒目颜色、点击后平滑滚动到结果区
-- 次要切换：「Pick a Team」- 文字按钮或次级按钮，点击切换到 6 只模式
+- 单一主 CTA：「Pick Random Pokémon」- 大按钮、醒目颜色、点击后平滑滚动到结果区（默认 6 只）
+- 不再有次要 CTA：Count 切换通过 basic filter 控制（1/3/6，默认 6）
 - 不跳页：点击后平滑滚动到第二屏
 
 ### 第二屏: Result
@@ -52,7 +51,7 @@
 └─────────────────────────────────────┘
 ```
 
-- 默认显示 1 张卡片（pending Discussion 4 - 默认数量）
+- 默认显示 6 张卡片（Count filter 默认 6）
 - 卡片信息层级见 result-card-design spec
 - Re-roll 按钮重新生成（不重置 filter）
 - Share 按钮生成带装饰的分享图（隐式触发，不污染默认显示）
@@ -60,6 +59,7 @@
 ### 第三屏: Filters（Progressive Disclosure）
 ```
 ┌─────────────────────────────────────┐
+│  Count:     [1] [3] [6*]            │  ← Basic，默认显示（*默认 6）
 │  Generation: [All] [1] [2] ... [9]  │  ← Basic，默认显示
 │  Type: [All] 🔥 💧 🌿 ... 🧚        │  ← Basic，默认显示
 │                                     │
@@ -70,6 +70,7 @@
 展开 Advanced 后：
 ```
 ┌─────────────────────────────────────┐
+│  Count:     [1] [3] [6*]            │
 │  Generation: [All] [1] [2] ... [9]  │
 │  Type: [All] 🔥 💧 🌿 ... 🧚        │
 │         [ ▲ Advanced ]               │
@@ -77,12 +78,11 @@
 │  Legendary: [Any] [Include] [Only]  │
 │  Shiny:     [Off] [On]              │
 │  Starter:   [Off] [On]              │
-│  Count:     [1] [3] [6]             │
 └─────────────────────────────────────┘
 ```
 
-- Basic filters 默认可见：Generation（Gen 1-9 chips）+ Type（属性图标）
-- Advanced filters 折叠：Legendary / Shiny / Starter / Count
+- Basic filters 默认可见：Count（1/3/6，默认 6）+ Generation（Gen 1-9 chips）+ Type（属性图标）
+- Advanced filters 折叠：Legendary / Shiny / Starter
 - 改任意 filter 后结果自动重新生成 + 轻动画（pending Discussion 7）
 - 详细交互见 filter-system spec
 
@@ -153,28 +153,28 @@
 首页 Hero SHALL 包含：
 - H1 = "Random Pokemon Picker"（含主关键词）
 - 副标 = 一句话价值主张（"Generate a random Pokémon instantly. Perfect for challenges, team building and fun."）
-- 主 CTA：「Pick a Pokémon」（默认出 1 只）
-- 次要切换：「Pick a Team」（出 6 只）
+- 单一主 CTA：「Pick Random Pokémon」（默认出 6 只，无次要 CTA）
+- Count 切换通过 basic filter 控制（1/3/6，默认 6）
 - 不跳页：点击后平滑滚动到结果区
 
 #### Scenario: 首次用户完成核心需求
 - **WHEN** 首次用户访问 `/`
 - **THEN** 看到 Hero + 主 CTA
-- **AND** 点击 "Pick a Pokémon" 后平滑滚动到结果区
-- **AND** 默认显示 1 张结果卡片
+- **AND** 点击 "Pick Random Pokémon" 后平滑滚动到结果区
+- **AND** 默认显示 6 张结果卡片
 - **AND** 全程 ≤ 3 秒
 
 ### Requirement: Result 区块
 结果区 SHALL 包含：
-- 结果卡片（默认 1 张，pending filter count）
+- 结果卡片（默认 6 张，跟随 Count filter）
 - Re-roll 按钮（重新随机，不重置 filter）
 - Share 按钮（生成带装饰的分享图）
 - 详细卡片设计见 result-card-design spec
 
 ### Requirement: Filters 区块（Progressive Disclosure）
 Filters 区块 SHALL 采用 progressive disclosure：
-- Basic filters 默认可见：Generation + Type
-- Advanced filters 折叠在按钮后：Legendary + Shiny + Starter + Count
+- Basic filters 默认可见：Count（1/3/6，默认 6）+ Generation + Type
+- Advanced filters 折叠在按钮后：Legendary + Shiny + Starter
 - 改任意 filter 后结果自动重新生成 + 轻动画
 - 详细交互见 filter-system spec
 
@@ -196,10 +196,13 @@ Filters 区块 SHALL 采用 progressive disclosure：
 Footer SHALL 极简，包含 4 个链接：About / Privacy / Contact / API。
 
 ## Open Questions
-1. 默认数量 1 只 vs 6 只 vs 3 只？（推荐 1 只，匹配主关键词单数）
-2. 改 filter 后自动重生成 vs 手动？（推荐自动 + 轻动画）
-3. 移动端 basic filters 是否折叠？（推荐是）
-4. Coming soon 占位是否加邮件订阅？（推荐是，收集需求信号）
+1. 改 filter 后自动重生成 vs 手动？（推荐自动 + 轻动画）
+2. 移动端 basic filters 是否折叠？（推荐是）
+3. Coming soon 占位是否加邮件订阅？（推荐是，收集需求信号）
+
+## Resolved Decisions
+- **默认数量 = 6 只**：Hero 单一主 CTA「Pick Random Pokémon」默认出 6 只，Count filter 默认 6 可切换 1/3/6，放 basic filters（见 product-overview Resolved Decisions #1）
+- **Hero 单一主 CTA**：不再有 Pick a Team 次要按钮，Count 切换通过 basic filter 控制
 
 ## Related Specs
 - [product-overview](../product-overview/spec.md) — 总纲

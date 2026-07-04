@@ -19,12 +19,6 @@ const BOOL_OPTIONS: { value: boolean; label: string }[] = [
   { value: true, label: 'On' },
 ];
 
-const COUNT_OPTIONS: { value: FilterOptions['count']; label: string }[] = [
-  { value: 1, label: '1' },
-  { value: 3, label: '3' },
-  { value: 6, label: '6' },
-];
-
 export default function AdvancedFilters({
   filter,
   onChange,
@@ -73,13 +67,6 @@ export default function AdvancedFilters({
               options={BOOL_OPTIONS}
               value={filter.starter}
               onChange={(v) => update('starter', v)}
-            />
-          </Row>
-          <Row label="Count">
-            <Segmented
-              options={COUNT_OPTIONS}
-              value={filter.count}
-              onChange={(v) => update('count', v)}
             />
           </Row>
         </div>

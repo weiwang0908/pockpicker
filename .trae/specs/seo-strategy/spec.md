@@ -116,6 +116,28 @@
 
 理由：避免工具页 = 首页复制品。Google 不会因为 URL 多就给排名，只会因为页面比竞品更专业才给排名。
 
+### 工具独立判断清单
+提议新建工具页时，SHALL 通过以下 4 项检查中至少 2 项：
+
+1. **搜索意图独立** — 该关键词的搜索意图与首页不同（如 starter picker 用户只想抽御三家，不是任意 Pokemon）
+2. **专属 filter 或行为** — 该工具有首页无法实现的 filter 或交互（如 team generator 强制 6 只，starter picker 强制 starter=true）
+3. **独立 SEO 内容** — 该工具有独立的 FAQ + What is + Popular Uses 内容簇
+4. **竞品有独立页** — 同类竞品为这个关键词做了独立 URL（说明搜索意图可被独立满足）
+
+**反模式（不该独立的信号）：**
+- "首页加个 filter 就能实现" → 不独立，加 filter
+- "只是换个关键词的随机生成" → 不独立，用 SEO 内容区块覆盖
+- "为了 internal linking 多一个页面" → 不独立，工具页不是 link farm
+
+#### Scenario: /fire-type-pokemon-generator 提议
+- **WHEN** 提议新建 /fire-type-pokemon-generator
+- **THEN** 检查清单：
+  - 搜索意图独立？❌（用户只是想抽火系，首页 type filter 就够）
+  - 专属 filter？❌（首页 type=fire 已支持）
+  - 独立 SEO 内容？❌（无独立 FAQ 价值）
+  - 竞品有独立页？❌（多数竞品用 filter 实现）
+- **结论**：4 项全不通过 → **不做独立页**，首页 filter 覆盖
+
 ## Sitemap.xml
 - 自动生成（Next.js generateSitemaps）
 - Phase 1 只列 7 个 URL

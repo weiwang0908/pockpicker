@@ -55,7 +55,7 @@ const defaultUIFilter: UIFilterOptions = {
   legendary: 'any',
   shiny: false,
   starter: false,
-  count: 1,
+  count: 6,
 }
 
 describe('generateTeamAction', () => {
