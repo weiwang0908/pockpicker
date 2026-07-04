@@ -16,8 +16,9 @@ export interface ShareButtonProps {
 }
 
 const SHARE_SIZE = 1080;
-const SITE_NAME = "Random Pokemon Picker";
-const SITE_URL = "pokepicker.com";
+const SHARE_SCALE = 2;
+const SITE_NAME = "PokePicker";
+const SITE_URL = "www.pokepicker.app";
 
 export function ShareButton({ pokemon }: ShareButtonProps) {
   const [generating, setGenerating] = useState(false);
@@ -42,7 +43,8 @@ export function ShareButton({ pokemon }: ShareButtonProps) {
         backgroundColor: null,
         useCORS: true,
         allowTaint: false,
-        scale: 1,
+        scale: SHARE_SCALE,
+        logging: false,
       });
       setDataUrl(canvas.toDataURL("image/png"));
       setCopyState("idle");
@@ -139,13 +141,15 @@ const ShareCardArt = forwardRef<HTMLDivElement, { pokemon: Pokemon }>(
           width: SHARE_SIZE,
           height: SHARE_SIZE,
           background: `linear-gradient(135deg, ${typeMeta.color} 0%, ${dark} 100%)`,
-          padding: 80,
+          padding: 60,
           boxSizing: "border-box",
           display: "flex",
+          flexDirection: "column",
           color: "#171717",
           fontFamily: "Arial, Helvetica, sans-serif",
         }}
       >
+        {/* White card */}
         <div
           style={{
             background: "#ffffff",
@@ -155,15 +159,14 @@ const ShareCardArt = forwardRef<HTMLDivElement, { pokemon: Pokemon }>(
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            padding: 64,
+            padding: 56,
             boxSizing: "border-box",
-            position: "relative",
           }}
         >
-          {/* Image — 60% of card height */}
+          {/* Image — 65% of card height */}
           <div
             style={{
-              flex: "0 0 60%",
+              flex: "0 0 65%",
               width: "100%",
               display: "flex",
               alignItems: "center",
@@ -209,23 +212,22 @@ const ShareCardArt = forwardRef<HTMLDivElement, { pokemon: Pokemon }>(
               {generationToRoman(pokemon.generation)}
             </div>
           </div>
+        </div>
 
-          {/* Watermark */}
+        {/* Watermark — placed on the colored background so it never sits on the white/orange edge */}
+        <div style={{ marginTop: 28, textAlign: "center" }}>
+          <div style={{ fontSize: 34, fontWeight: 700, color: "#ffffff" }}>
+            {SITE_NAME}
+          </div>
           <div
             style={{
-              marginTop: "auto",
-              paddingTop: 28,
-              borderTop: "2px solid #f3f4f6",
-              width: "100%",
-              textAlign: "center",
+              fontSize: 26,
+              fontWeight: 600,
+              color: "rgba(255, 255, 255, 0.92)",
+              marginTop: 6,
             }}
           >
-            <div style={{ fontSize: 34, fontWeight: 600, color: "#171717" }}>
-              {SITE_NAME}
-            </div>
-            <div style={{ fontSize: 26, color: "#9ca3af", marginTop: 6 }}>
-              {SITE_URL}
-            </div>
+            {SITE_URL}
           </div>
         </div>
       </div>

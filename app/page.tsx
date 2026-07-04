@@ -1,5 +1,14 @@
 import type { Metadata } from 'next';
 import HomeClient from './components/HomeClient';
+import { getRandomPokemon } from '@/lib/pokeapi/client';
+import { toCardPokemon } from '@/app/lib/pokemon-mapper';
+import type { Pokemon as CardPokemon } from '@/app/lib/type-data';
+
+/**
+ * force-dynamic: 每次请求都重新渲染（让每位访客看到不同的随机 Pokemon）。
+ * PokeAPI 数据本身仍由 cachedFetch 缓存 24h，不会重复请求 API。
+ */
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Random Pokemon Picker — Pick Any of 1025 Pokémon in One Click | PokePicker',
@@ -53,10 +62,28 @@ const FAQ_JSON_LD = {
   })),
 };
 
-export default function Home() {
+export default async function Home() {
+  // 服务端预生成首屏结果：用户落地即见 6 只 Pokemon，0 等待。
+  // PokeAPI 数据由 cachedFetch 缓存 24h，只有随机选择是 per-request。
+  let initialResults: CardPokemon[] = [];
+  try {
+    const dataFilter = {
+      generation: 'all' as const,
+      type: 'all' as const,
+      legendary: 'any' as const,
+      shiny: 'off' as const,
+      starter: 'off' as const,
+      count: 6 as 1 | 3 | 6,
+    };
+    const pokemons = await getRandomPokemon(dataFilter, 6);
+    initialResults = pokemons.map((p) => toCardPokemon(p, false));
+  } catch {
+    // PokeAPI 不可用时降级为空结果，用户点按钮仍可触发 Server Action
+  }
+
   return (
     <>
-      <HomeClient faqItems={FAQ_ITEMS} />
+      <HomeClient faqItems={FAQ_ITEMS} initialResults={initialResults} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }}

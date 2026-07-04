@@ -24,10 +24,10 @@ export default function ContactPage() {
           </h2>
           <p className="mt-2">
             <a
-              href="mailto:hello@pokepicker.com"
+              href="mailto:hello@pokepicker.app"
               className="font-medium text-brand underline underline-offset-2 hover:opacity-80"
             >
-              hello@pokepicker.com
+              hello@pokepicker.app
             </a>
           </p>
         </div>

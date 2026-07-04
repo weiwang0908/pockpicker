@@ -10,11 +10,11 @@
  * 所有导出必须是 async（"use server" 文件约束）；内部辅助函数可为同步。
  */
 
-import { getRandomPokemon, pickSprite } from "@/lib/pokeapi/client";
+import { getRandomPokemon } from "@/lib/pokeapi/client";
+import { toCardPokemon } from "@/app/lib/pokemon-mapper";
 import type {
   FilterOptions as DataFilterOptions,
   Generation,
-  Pokemon as FullPokemon,
   PokemonType,
 } from "@/lib/pokeapi/types";
 import type { FilterOptions as UIFilterOptions } from "@/app/components/Filters";
@@ -32,18 +32,16 @@ function uiToDataFilter(ui: UIFilterOptions): DataFilterOptions {
   };
 }
 
-/** 完整 Pokemon → 简化卡片 Pokemon（PokemonCardList/PokemonCard 期望的结构） */
-function toCardPokemon(p: FullPokemon, shiny: boolean): CardPokemon {
-  return {
-    id: p.id,
-    name: p.species.displayNameEn || p.name,
-    types: p.types,
-    sprite: pickSprite(p.sprites, shiny) ?? "",
-    generation: p.generation,
-    height: p.height,
-    weight: p.weight,
-    abilities: p.abilities.map((a) => a.name),
-  };
+/**
+ * 首页 Random Pokemon Picker：使用 filter.count（1 / 3 / 6）。
+ * 首屏结果由 page.tsx 服务端预生成，此 Action 用于 reroll / filter change。
+ */
+export async function generateRandomAction(
+  uiFilter: UIFilterOptions,
+): Promise<CardPokemon[]> {
+  const dataFilter = uiToDataFilter(uiFilter);
+  const pokemons = await getRandomPokemon(dataFilter, uiFilter.count);
+  return pokemons.map((p) => toCardPokemon(p, uiFilter.shiny));
 }
 
 /**

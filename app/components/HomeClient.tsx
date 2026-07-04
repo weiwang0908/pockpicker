@@ -4,46 +4,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Filters from './Filters';
 import { PokemonCardList } from './PokemonCardList';
 import { defaultFilter, type FilterOptions } from './Filters';
-import { getRandomPokemon, pickSprite } from '@/lib/pokeapi/client';
+import { generateRandomAction } from '@/app/lib/actions';
 import { trackEvent } from '@/app/lib/analytics';
-import type {
-  FilterOptions as ApiFilterOptions,
-  Pokemon as ApiPokemon,
-} from '@/lib/pokeapi/types';
 import type { Pokemon as CardPokemon } from '@/app/lib/type-data';
-
-/* -------------------------------------------------------------------------- */
-/* Type bridges                                                                */
-/* Filters.tsx exports its own FilterOptions (number|null / boolean).         */
-/* lib/pokeapi/client expects the FilterOptions from lib/pokeapi/types         */
-/* ("all" / "on"|"off"). Same story for Pokemon: client returns the rich       */
-/* PokeAPI Pokemon, but PokemonCardList consumes the lean type-data Pokemon.   */
-/* Existing components must not be modified, so we adapt at the boundary.     */
-/* -------------------------------------------------------------------------- */
-
-function toApiFilter(f: FilterOptions): ApiFilterOptions {
-  return {
-    generation: (f.generation ?? 'all') as ApiFilterOptions['generation'],
-    type: (f.type ? f.type.toLowerCase() : 'all') as ApiFilterOptions['type'],
-    legendary: f.legendary,
-    shiny: f.shiny ? 'on' : 'off',
-    starter: f.starter ? 'on' : 'off',
-    count: f.count,
-  };
-}
-
-function toCardPokemon(p: ApiPokemon, shiny: boolean): CardPokemon {
-  return {
-    id: p.id,
-    name: p.displayName,
-    types: p.types,
-    sprite: pickSprite(p.sprites, shiny) ?? p.sprites.frontDefault ?? '',
-    generation: p.generation,
-    height: p.height,
-    weight: p.weight,
-    abilities: p.abilities.map((a) => a.name),
-  };
-}
+import { Logo } from './Logo';
 
 /* -------------------------------------------------------------------------- */
 /* Component                                                                   */
@@ -51,41 +15,35 @@ function toCardPokemon(p: ApiPokemon, shiny: boolean): CardPokemon {
 
 interface HomeClientProps {
   faqItems: { q: string; a: string }[];
+  /** 服务端预生成的首屏结果（用户落地即见，0 等待） */
+  initialResults: CardPokemon[];
 }
 
-export default function HomeClient({ faqItems }: HomeClientProps) {
+export default function HomeClient({ faqItems, initialResults }: HomeClientProps) {
   const [filter, setFilter] = useState<FilterOptions>(defaultFilter);
-  const [results, setResults] = useState<CardPokemon[]>([]);
+  const [results, setResults] = useState<CardPokemon[]>(initialResults);
   const [isGenerating, setIsGenerating] = useState(false);
   const [resultKey, setResultKey] = useState(0);
+  // 区分「初始未操作」与「操作后筛选无匹配」两种空状态
+  const hasPickedRef = useRef(false);
 
   const resultRef = useRef<HTMLDivElement>(null);
   const scrollPendingRef = useRef(false);
-  const hasStartedRef = useRef(false);
   const reqIdRef = useRef(0);
 
   // teamMode is derived from count, not separate state
   const isTeamMode = filter.count >= 3;
 
-  const fetchResults = useCallback(
-    async (f: FilterOptions): Promise<CardPokemon[]> => {
-      const apiFilter = toApiFilter(f);
-      const raw = await getRandomPokemon(apiFilter, f.count);
-      return raw.map((p) => toCardPokemon(p, f.shiny));
-    },
-    [],
-  );
-
-  // Single source of truth for generation. A request token guards against
-  // stale writes when filters change faster than the network resolves.
+  // 调用 Server Action（服务端缓存生效），不再直接在浏览器里 fetch PokeAPI
   const runGenerate = useCallback(
     async (f: FilterOptions, opts: { scroll: boolean }) => {
       const id = ++reqIdRef.current;
       setIsGenerating(true);
       if (opts.scroll) scrollPendingRef.current = true;
       try {
-        const r = await fetchResults(f);
+        const r = await generateRandomAction(f);
         if (id !== reqIdRef.current) return; // superseded
+        hasPickedRef.current = true;
         setResults(r);
         setResultKey((k) => k + 1);
       } catch {
@@ -94,7 +52,7 @@ export default function HomeClient({ faqItems }: HomeClientProps) {
         if (id === reqIdRef.current) setIsGenerating(false);
       }
     },
-    [fetchResults],
+    [],
   );
 
   // Smooth-scroll to the result section after a CTA-triggered render.
@@ -108,7 +66,6 @@ export default function HomeClient({ faqItems }: HomeClientProps) {
   }, [results, resultKey]);
 
   const handlePick = () => {
-    hasStartedRef.current = true;
     trackEvent('pick_pokemon', {
       count: filter.count,
       generation: filter.generation ?? 'all',
@@ -127,7 +84,6 @@ export default function HomeClient({ faqItems }: HomeClientProps) {
 
   const handleFilterChange = (next: FilterOptions) => {
     setFilter(next);
-    if (!hasStartedRef.current) return; // don't auto-generate before first pick
     trackEvent('filter_change', {
       field: 'mixed',
       generation: next.generation ?? 'all',
@@ -141,9 +97,10 @@ export default function HomeClient({ faqItems }: HomeClientProps) {
     <main className="flex flex-1 flex-col">
       {/* Logo bar */}
       <header className="sticky top-0 z-30 border-b border-zinc-100 bg-background/80 backdrop-blur-md">
-        <div className="mx-auto flex w-full max-w-5xl items-center px-6 py-3">
+        <div className="mx-auto flex w-full max-w-5xl items-center gap-2 px-6 py-3">
+          <Logo className="h-5 w-5" />
           <span className="text-base font-bold tracking-tight text-foreground">
-            🎲 PokePicker
+            PokePicker
           </span>
         </div>
       </header>
@@ -179,16 +136,18 @@ export default function HomeClient({ faqItems }: HomeClientProps) {
         <h2 className="mb-8 text-center text-2xl font-bold tracking-tight text-foreground">
           {isTeamMode ? 'Your Team' : 'Your Pokémon'}
         </h2>
-        {results.length > 0 ? (
+        {isGenerating ? (
+          <PokemonCardSkeleton count={filter.count} />
+        ) : results.length > 0 ? (
           // key forces remount → retriggers the card-reveal + 200ms fade.
           <div key={resultKey} className="animate-pp-fade">
             <PokemonCardList pokemons={results} isTeamMode={isTeamMode} />
           </div>
+        ) : hasPickedRef.current ? (
+          <EmptyResults />
         ) : (
           <p className="text-center text-sm text-muted">
-            {isGenerating
-              ? 'Picking your Pokémon…'
-              : 'Tap “Pick a Pokémon” to start.'}
+            Tap “Pick a Pokémon” to start.
           </p>
         )}
         {results.length > 0 && (
@@ -290,8 +249,9 @@ export default function HomeClient({ faqItems }: HomeClientProps) {
       {/* Footer */}
       <footer className="border-t border-zinc-100">
         <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
-          <div className="text-sm font-bold text-foreground">
-            🎲 PokePicker
+          <div className="flex items-center gap-2 text-sm font-bold text-foreground">
+            <Logo className="h-4 w-4" />
+            PokePicker
           </div>
           <nav className="flex gap-5 text-sm text-muted">
             <a href="/about" className="transition-colors hover:text-brand">
@@ -310,6 +270,52 @@ export default function HomeClient({ faqItems }: HomeClientProps) {
         </div>
       </footer>
     </main>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Skeleton loading (reroll 时展示，避免空白等待)                               */
+/* -------------------------------------------------------------------------- */
+
+function PokemonCardSkeleton({ count }: { count: number }) {
+  return (
+    <div
+      className="grid grid-cols-1 justify-items-center gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-6"
+      role="status"
+      aria-label="Loading Pokémon"
+    >
+      {Array.from({ length: count }).map((_, i) => (
+        <div
+          key={i}
+          className="flex w-full max-w-[18rem] flex-col items-center rounded-2xl border border-zinc-100 bg-surface p-4 shadow-sm"
+        >
+          <div className="aspect-square w-full animate-pulse rounded-xl bg-zinc-100" />
+          <div className="mt-3 h-5 w-28 animate-pulse rounded bg-zinc-100" />
+          <div className="mt-2 h-3 w-20 animate-pulse rounded bg-zinc-100" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* 筛选无匹配：提示用户调整筛选条件                                              */
+/* -------------------------------------------------------------------------- */
+
+function EmptyResults() {
+  return (
+    <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-2xl border border-dashed border-zinc-300 bg-surface/60 px-6 py-12 text-center">
+      <span className="text-3xl" aria-hidden="true">
+        🔍
+      </span>
+      <p className="text-sm font-semibold text-foreground">
+        No Pokémon match your filters
+      </p>
+      <p className="text-xs text-muted">
+        Try relaxing some filters below — for example, switch generation back to
+        “All” or change the type.
+      </p>
+    </div>
   );
 }
 

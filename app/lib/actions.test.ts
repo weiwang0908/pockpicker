@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { getRandomPokemon } from '@/lib/pokeapi/client'
-import { generateTeamAction, pickStarterAction } from '@/app/lib/actions'
+import { generateRandomAction, generateTeamAction, pickStarterAction } from '@/app/lib/actions'
 import type { Pokemon } from '@/lib/pokeapi/types'
 import type { FilterOptions as UIFilterOptions } from '@/app/components/Filters'
 
@@ -57,6 +57,83 @@ const defaultUIFilter: UIFilterOptions = {
   starter: false,
   count: 6,
 }
+
+describe('generateRandomAction', () => {
+  beforeEach(() => {
+    vi.mocked(getRandomPokemon).mockReset()
+  })
+
+  it('使用 filter.count（默认 6）', async () => {
+    vi.mocked(getRandomPokemon).mockResolvedValue([makeMockPokemon()])
+
+    await generateRandomAction(defaultUIFilter)
+
+    expect(getRandomPokemon).toHaveBeenCalledTimes(1)
+    expect(getRandomPokemon).toHaveBeenCalledWith(
+      expect.objectContaining({ count: 6 }),
+      6,
+    )
+  })
+
+  it('count=1 时只抽 1 只', async () => {
+    vi.mocked(getRandomPokemon).mockResolvedValue([makeMockPokemon()])
+
+    await generateRandomAction({ ...defaultUIFilter, count: 1 })
+
+    expect(getRandomPokemon).toHaveBeenCalledWith(
+      expect.objectContaining({ count: 1 }),
+      1,
+    )
+  })
+
+  it('count=3 时抽 3 只', async () => {
+    vi.mocked(getRandomPokemon).mockResolvedValue([makeMockPokemon()])
+
+    await generateRandomAction({ ...defaultUIFilter, count: 3 })
+
+    expect(getRandomPokemon).toHaveBeenCalledWith(
+      expect.objectContaining({ count: 3 }),
+      3,
+    )
+  })
+
+  it('传递 filter 字段（generation / type / shiny / starter）', async () => {
+    vi.mocked(getRandomPokemon).mockResolvedValue([makeMockPokemon()])
+
+    await generateRandomAction({
+      ...defaultUIFilter,
+      generation: 1,
+      type: 'Fire',
+      shiny: true,
+      starter: true,
+    })
+
+    expect(getRandomPokemon).toHaveBeenCalledWith(
+      expect.objectContaining({
+        generation: 1,
+        type: 'fire',
+        shiny: 'on',
+        starter: 'on',
+      }),
+      6,
+    )
+  })
+
+  it('返回 CardPokemon[]（name 取 displayNameEn）', async () => {
+    vi.mocked(getRandomPokemon).mockResolvedValue([makeMockPokemon()])
+
+    const [card] = await generateRandomAction(defaultUIFilter)
+
+    expect(card.name).toBe('Pikachu')
+    expect(card).toHaveProperty('id')
+    expect(card).toHaveProperty('types')
+    expect(card).toHaveProperty('sprite')
+    expect(card).toHaveProperty('generation')
+    expect(card).toHaveProperty('height')
+    expect(card).toHaveProperty('weight')
+    expect(card).toHaveProperty('abilities')
+  })
+})
 
 describe('generateTeamAction', () => {
   beforeEach(() => {

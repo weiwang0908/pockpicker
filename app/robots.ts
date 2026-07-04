@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://pokepicker.app";
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pokepicker.app";
 
 export default function robots(): MetadataRoute.Robots {
   return {

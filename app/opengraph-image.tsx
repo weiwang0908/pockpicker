@@ -91,7 +91,7 @@ export default async function Image() {
             display: 'flex',
           }}
         >
-          pokepicker.com
+          www.pokepicker.app
         </div>
       </div>
     ),

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://pokepicker.app";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.pokepicker.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

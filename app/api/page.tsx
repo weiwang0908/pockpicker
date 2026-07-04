@@ -33,7 +33,7 @@ export default function ApiPage() {
             All endpoints are relative to the versioned base below. Always use
             HTTPS — plain HTTP requests are redirected but discouraged.
           </p>
-          <CodeBlock>https://api.pokepicker.com/api/v1</CodeBlock>
+          <CodeBlock>https://api.pokepicker.app/api/v1</CodeBlock>
         </Section>
 
         <Section title="Endpoints">
@@ -168,10 +168,10 @@ export default function ApiPage() {
 
         <Section title="Examples">
           <p className="mb-2 text-sm">curl</p>
-          <CodeBlock>{`curl "https://api.pokepicker.com/api/v1/pokemon/random"`}</CodeBlock>
+          <CodeBlock>{`curl "https://api.pokepicker.app/api/v1/pokemon/random"`}</CodeBlock>
           <p className="mb-2 mt-4 text-sm">JavaScript (fetch)</p>
           <CodeBlock>{`const res = await fetch(
-  "https://api.pokepicker.com/api/v1/pokemon/random?count=6"
+  "https://api.pokepicker.app/api/v1/pokemon/random?count=6"
 );
 const team = await res.json();
 console.log(team);`}</CodeBlock>
@@ -179,7 +179,7 @@ console.log(team);`}</CodeBlock>
           <CodeBlock>{`import requests
 
 res = requests.get(
-    "https://api.pokepicker.com/api/v1/pokemon",
+    "https://api.pokepicker.app/api/v1/pokemon",
     params={"generation": 1, "type": "fire"},
 )
 data = res.json()
