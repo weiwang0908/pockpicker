@@ -43,7 +43,7 @@ export function PokemonCard({
   // Desktop hover is handled via CSS `group-hover:` on the expand panel.
   // Share button stops propagation so its click doesn't toggle the card.
   return (
-    <div className="group flex w-full max-w-[18rem] flex-col sm:w-72">
+    <div className="group mx-auto flex w-full max-w-[18rem] flex-col sm:w-72">
       <article
         className="animate-card-reveal flex flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition-shadow hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
         style={{

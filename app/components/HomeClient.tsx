@@ -287,7 +287,7 @@ function PokemonCardSkeleton({ count }: { count: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="flex w-full max-w-[18rem] flex-col items-center rounded-2xl border border-zinc-100 bg-surface p-4 shadow-sm"
+          className="mx-auto flex w-full max-w-[18rem] flex-col items-center rounded-2xl border border-zinc-100 bg-surface p-4 shadow-sm"
         >
           <div className="aspect-square w-full animate-pulse rounded-xl bg-zinc-100" />
           <div className="mt-3 h-5 w-28 animate-pulse rounded bg-zinc-100" />
