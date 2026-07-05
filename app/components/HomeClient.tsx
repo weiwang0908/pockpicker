@@ -25,7 +25,7 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
   const [isGenerating, setIsGenerating] = useState(false);
   const [resultKey, setResultKey] = useState(0);
   // 区分「初始未操作」与「操作后筛选无匹配」两种空状态
-  const hasPickedRef = useRef(false);
+  const [hasPicked, setHasPicked] = useState(false);
 
   const resultRef = useRef<HTMLDivElement>(null);
   const scrollPendingRef = useRef(false);
@@ -43,7 +43,7 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
       try {
         const r = await generateRandomAction(f);
         if (id !== reqIdRef.current) return; // superseded
-        hasPickedRef.current = true;
+        setHasPicked(true);
         setResults(r);
         setResultKey((k) => k + 1);
       } catch {
@@ -143,7 +143,7 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
           <div key={resultKey} className="animate-pp-fade">
             <PokemonCardList pokemons={results} isTeamMode={isTeamMode} />
           </div>
-        ) : hasPickedRef.current ? (
+        ) : hasPicked ? (
           <EmptyResults />
         ) : (
           <p className="text-center text-sm text-muted">
@@ -265,6 +265,12 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
             </a>
             <a href="/api" className="transition-colors hover:text-brand">
               API
+            </a>
+            <a
+              href="/resources"
+              className="transition-colors hover:text-brand"
+            >
+              Resources
             </a>
           </nav>
         </div>

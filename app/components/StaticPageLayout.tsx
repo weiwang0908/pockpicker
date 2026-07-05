@@ -68,6 +68,12 @@ export function StaticPageLayout({ title, children }: StaticPageLayoutProps) {
           >
             API
           </Link>
+          <Link
+            href="/resources"
+            className="transition-colors hover:text-zinc-800 dark:hover:text-zinc-200"
+          >
+            Resources
+          </Link>
         </div>
       </footer>
     </>
