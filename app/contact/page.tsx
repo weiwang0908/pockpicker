@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
 import { StaticPageLayout } from "@/app/components/StaticPageLayout";
-import { ContactForm } from "./ContactForm";
 
 export const metadata: Metadata = {
   title: { absolute: "Contact — PokePicker" },
@@ -14,7 +13,7 @@ export default function ContactPage() {
     <StaticPageLayout title="Contact">
       <div className="space-y-8 text-zinc-700 dark:text-zinc-300">
         <p>
-          Have a question, bug report, or feature idea? Reach out — we read
+          Have a question, bug report, or feature idea? Email us — we read
           everything.
         </p>
 
@@ -24,21 +23,12 @@ export default function ContactPage() {
           </h2>
           <p className="mt-2">
             <a
-              href="mailto:hello@pokepicker.app"
+              href="mailto:pokepicker@163.com"
               className="font-medium text-brand underline underline-offset-2 hover:opacity-80"
             >
-              hello@pokepicker.app
+              pokepicker@163.com
             </a>
           </p>
-        </div>
-
-        <div>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-            Send a message
-          </h2>
-          <div className="mt-3">
-            <ContactForm />
-          </div>
         </div>
       </div>
     </StaticPageLayout>

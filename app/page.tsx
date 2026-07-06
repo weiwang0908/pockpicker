@@ -5,10 +5,12 @@ import { toCardPokemon } from '@/app/lib/pokemon-mapper';
 import type { Pokemon as CardPokemon } from '@/app/lib/type-data';
 
 /**
- * force-dynamic: 每次请求都重新渲染（让每位访客看到不同的随机 Pokemon）。
- * PokeAPI 数据本身仍由 cachedFetch 缓存 24h，不会重复请求 API。
+ * ISR: 每 5 分钟在服务端重新生成一次首屏随机 Pokemon。
+ * - 首次冷启动拉取 PokeAPI 后，HTML 被缓存，后续访客秒开
+ * - 5 分钟窗口内的访客看到相同首屏，但点 reroll / 改 filter 仍走
+ *   Server Action 实时拉新数据，体验上仍是"每次随机"
  */
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'Random Pokemon Picker — Pick Any of 1025 Pokémon in One Click | PokePicker',

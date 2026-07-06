@@ -154,13 +154,28 @@ function transformPokemon(
     .map((t) => t.type.name as PokemonType)
     .filter((t) => Boolean(TYPE_MAP[t]));
 
+  // PokeAPI sprite URLs point to raw.githubusercontent.com, which is often
+  // blocked/throttled in mainland China. Rewrite to jsdelivr CDN mirror
+  // (https://cdn.jsdelivr.net/gh/...) which is reliably accessible there.
+  // Also upgrade http → https to avoid mixed-content blocks.
+  const rewriteSpriteUrl = (url: string | null | undefined) => {
+    if (!url) return null;
+    const https = url.replace(/^http:\/\//, "https://");
+    return https.replace(
+      /^https:\/\/raw\.githubusercontent\.com\/PokeAPI\/sprites\/master\//,
+      "https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/",
+    );
+  };
+
   const sprites: PokemonSprites = {
-    frontDefault: pokemonRes.sprites.front_default ?? null,
-    frontShiny: pokemonRes.sprites.front_shiny ?? null,
-    officialArtwork:
-      pokemonRes.sprites.other?.["official-artwork"]?.front_default ?? null,
-    officialArtworkShiny:
-      pokemonRes.sprites.other?.["official-artwork"]?.front_shiny ?? null,
+    frontDefault: rewriteSpriteUrl(pokemonRes.sprites.front_default),
+    frontShiny: rewriteSpriteUrl(pokemonRes.sprites.front_shiny),
+    officialArtwork: rewriteSpriteUrl(
+      pokemonRes.sprites.other?.["official-artwork"]?.front_default,
+    ),
+    officialArtworkShiny: rewriteSpriteUrl(
+      pokemonRes.sprites.other?.["official-artwork"]?.front_shiny,
+    ),
   };
 
   const enNameEntry = speciesRes.names.find((n) => n.language.name === "en");

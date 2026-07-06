@@ -51,9 +51,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/* 预连接 sprite CDN，加速首屏图片加载 */}
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
         {children}
         <Analytics />
       </body>
