@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: "%s | PokePicker",
   },
   description:
-    "PokePicker — pick your Pokémon, preview your selection, and share a card.",
+    "Random Pokemon Picker — pick your Pokémon, preview your selection, and share a card. Generate random Pokémon from all 1025 species in one click.",
   openGraph: {
     type: "website",
     locale: "en_US",

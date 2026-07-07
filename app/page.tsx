@@ -15,8 +15,19 @@ export const revalidate = 300;
 export const metadata: Metadata = {
   title: 'Random Pokemon Picker — Pick Any of 1025 Pokémon in One Click | PokePicker',
   description:
-    'Generate a random Pokémon from all 1025 species in one click. Filter by generation, type, starter or legendary. Free, no signup. Perfect for team building, Nuzlocke challenges and art prompts.',
+    'Random Pokemon Picker: generate a random Pokémon from all 1025 species in one click. Filter by generation, type, starter or legendary. Free, no signup. Perfect for team building, Nuzlocke challenges and art prompts.',
   alternates: { canonical: '/' },
+  openGraph: {
+    title: 'Random Pokemon Picker — Pick Any of 1025 Pokémon in One Click',
+    description:
+      'Use this random Pokemon picker to generate a random Pokémon or full team from all 1025 species. Filter by generation, type, legendary and shiny. Free, no signup.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Random Pokemon Picker — Pick Any of 1025 Pokémon in One Click',
+    description:
+      'Use this random Pokemon picker to generate a random Pokémon or full team from all 1025 species. Filter by generation, type, legendary and shiny.',
+  },
 };
 
 const FAQ_ITEMS: { q: string; a: string }[] = [
@@ -51,6 +62,18 @@ const FAQ_ITEMS: { q: string; a: string }[] = [
   {
     q: 'Is it free to use?',
     a: 'Yes, completely free. No sign-up, no ads. Just open the page and pick a Pokémon instantly.',
+  },
+  {
+    q: 'Can I use this random Pokemon picker on mobile?',
+    a: 'Yes. The page is fully responsive and touch-friendly, so you can generate random Pokémon on any phone or tablet.',
+  },
+  {
+    q: 'Does the random Pokemon picker include shiny Pokémon?',
+    a: 'Yes. Turn on the Shiny filter and every generated Pokémon will use its shiny sprite.',
+  },
+  {
+    q: 'Can I pick more than one Pokémon at a time?',
+    a: 'Yes. Use the Count filter to generate 1, 3 or 6 Pokémon in a single click.',
   },
 ];
 

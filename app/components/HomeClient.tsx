@@ -111,7 +111,9 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
           Random Pokemon Picker
         </h1>
         <p className="mt-5 max-w-xl text-base text-muted sm:text-lg">
-          Generate a random Pokémon from all 1025 species in one click.
+          Generate a random Pokémon from all 1025 species in one click. This
+          random Pokemon picker helps you build teams, run Nuzlocke challenges,
+          or find drawing inspiration instantly.
         </p>
         <div className="mt-9 flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:justify-center">
           <button
@@ -147,7 +149,7 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
           <EmptyResults />
         ) : (
           <p className="text-center text-sm text-muted">
-            Tap “Pick a Pokémon” to start.
+            Tap “Pick Random Pokémon” to start using the random Pokemon picker.
           </p>
         )}
         {results.length > 0 && (
@@ -166,9 +168,13 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
 
       {/* 3. Filters */}
       <section className="mx-auto w-full max-w-3xl px-6 py-12">
-        <h2 className="mb-6 text-center text-2xl font-bold tracking-tight text-foreground">
+        <h2 className="mb-2 text-center text-2xl font-bold tracking-tight text-foreground">
           Filters
         </h2>
+        <p className="mb-6 text-center text-sm text-muted">
+          Fine-tune your random Pokemon picker results by generation, type,
+          legendary status, shiny form and team size.
+        </p>
         <Filters filter={filter} onChange={handleFilterChange} />
       </section>
 
@@ -199,25 +205,79 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
           A random Pokemon picker is a free tool that selects a Pokémon for you
           at random from all 1025 species across generations 1 to 9. Pick a
           single Pokémon or generate a full team of six, with optional filters
-          for generation, type, legendary status and shiny form. It&apos;s
-          perfect for Nuzlocke challenges, team building, art prompts or any time
-          you need a fair, instant random pick.
+          for generation, type, legendary status and shiny form. Whether you
+          need a random Pokemon picker for Nuzlocke challenges, team building,
+          art prompts or drawing inspiration, you get a fair, instant pick every
+          time.
+        </p>
+
+        <h2 className="mt-12 text-2xl font-bold tracking-tight text-foreground">
+          How to Use This Random Pokemon Picker
+        </h2>
+        <ol className="mt-3 grid gap-3 text-sm text-muted sm:grid-cols-3">
+          {[
+            {
+              step: '1',
+              text: 'Set your filters — choose a generation, type, legendary status or shiny form.',
+            },
+            {
+              step: '2',
+              text: 'Click “Pick Random Pokémon” and the random Pokemon picker instantly selects up to six Pokémon.',
+            },
+            {
+              step: '3',
+              text: 'Re-roll, adjust filters or share your favorite picks with the built-in share card.',
+            },
+          ].map((item) => (
+            <li
+              key={item.step}
+              className="rounded-xl border border-zinc-100 bg-surface p-4"
+            >
+              <span className="font-bold text-brand">{item.step}.</span>{' '}
+              {item.text}
+            </li>
+          ))}
+        </ol>
+
+        <h2 className="mt-12 text-2xl font-bold tracking-tight text-foreground">
+          Why Use This Random Pokemon Picker?
+        </h2>
+        <p className="mt-3 text-sm leading-relaxed text-muted">
+          PokePicker covers every Pokémon from generations 1 through 9, so you
+          always get a valid, fair pick from the full Pokédex. The random Pokemon
+          picker is free, works without signup, and runs smoothly on mobile and
+          desktop. Advanced filters let you narrow results to a single generation,
+          type, legendary pool or shiny form, while the default six-Pokémon team
+          mode is perfect for quick team building.
         </p>
 
         <h2 className="mt-12 text-2xl font-bold tracking-tight text-foreground">
           Popular Uses
         </h2>
-        <ul className="mt-3 grid gap-2 text-sm text-muted sm:grid-cols-2">
-          {['Team building', 'Nuzlocke challenges', 'Art prompts', 'Drawing inspiration'].map(
-            (use) => (
-              <li key={use} className="flex items-center gap-2">
-                <span aria-hidden="true" className="text-brand">
-                  •
-                </span>
-                {use}
-              </li>
-            ),
-          )}
+        <ul className="mt-3 grid gap-3 text-sm text-muted sm:grid-cols-2">
+          {[
+            {
+              title: 'Team building',
+              desc: 'Generate a balanced squad in seconds for casual or competitive play.',
+            },
+            {
+              title: 'Nuzlocke challenges',
+              desc: 'Let the random Pokemon picker decide your encounters and keep runs fresh.',
+            },
+            {
+              title: 'Art prompts',
+              desc: 'Get a random Pokémon to draw, paint or use as a design exercise.',
+            },
+            {
+              title: 'Drawing inspiration',
+              desc: 'Break creative block with an instant, unexpected Pokémon choice.',
+            },
+          ].map((use) => (
+            <li key={use.title} className="rounded-xl border border-zinc-100 bg-surface p-4">
+              <span className="font-semibold text-foreground">{use.title}</span>
+              <p className="mt-1 text-muted">{use.desc}</p>
+            </li>
+          ))}
         </ul>
 
         <h2 className="mt-12 text-2xl font-bold tracking-tight text-foreground">
