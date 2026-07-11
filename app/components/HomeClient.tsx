@@ -180,6 +180,10 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
               href="/pokemon-team-builder"
               title="Pokemon Team Builder"
             />
+            <ToolCard
+              href="/pokemon-natures"
+              title="Pokemon Natures Guide"
+            />
             <ComingSoonCard title="Legendary Generator" />
           </div>
         </div>

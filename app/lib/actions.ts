@@ -137,3 +137,35 @@ export async function generateRandomTeamAction(): Promise<TeamBuilderPokemon[]> 
     abilities: p.abilities.map((a) => a.name),
   }));
 }
+
+/* -------------------------------------------------------------------------- */
+/* Pokemon Natures Page Actions                                                */
+/* -------------------------------------------------------------------------- */
+
+/** 推荐器返回的最小结构（含种族值） */
+export interface NatureRecommenderPokemon {
+  id: number;
+  name: string;
+  sprite: string;
+  stats: { name: string; baseStat: number }[];
+}
+
+/**
+ * 按名称查询 Pokemon 种族值（natures 推荐器用）。
+ * 返回 stats 数组（PokeAPI stat.name: attack/defense/special-attack/...）。
+ */
+export async function fetchPokemonStatsAction(
+  name: string,
+): Promise<NatureRecommenderPokemon | null> {
+  try {
+    const p = await fetchPokemonByName(name);
+    return {
+      id: p.id,
+      name: p.species.displayNameEn || p.name,
+      sprite: pickSprite(p.sprites, false) ?? "",
+      stats: p.stats.map((s) => ({ name: s.name, baseStat: s.baseStat })),
+    };
+  } catch {
+    return null;
+  }
+}

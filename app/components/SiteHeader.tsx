@@ -11,6 +11,7 @@ interface Tool {
 
 const TOOLS: Tool[] = [
   { href: "/pokemon-team-builder", label: "Pokemon Team Builder" },
+  { href: "/pokemon-natures", label: "Pokemon Natures" },
 ];
 
 export function SiteHeader({ showLogoText = true }: { showLogoText?: boolean }) {
