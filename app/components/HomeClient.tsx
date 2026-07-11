@@ -108,12 +108,12 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
       {/* 1. Hero */}
       <section className="mx-auto flex w-full max-w-3xl flex-col items-center px-6 py-12 text-center sm:py-20 md:py-28">
         <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-          Random Pokemon Picker
+          Random Pokemon Picker & Generator
         </h1>
         <p className="mt-5 max-w-xl text-base text-muted sm:text-lg">
           Generate a random Pokémon from all 1025 species in one click. This
-          random Pokemon picker helps you build teams, run Nuzlocke challenges,
-          or find drawing inspiration instantly.
+          random Pokemon picker and generator helps you build teams, run
+          Nuzlocke challenges, or find drawing inspiration instantly.
         </p>
         <div className="mt-9 flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:justify-center">
           <button
@@ -149,7 +149,7 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
           <EmptyResults />
         ) : (
           <p className="text-center text-sm text-muted">
-            Tap “Pick Random Pokémon” to start using the random Pokemon picker.
+            Tap &ldquo;Pick Random Pokémon&rdquo; to start using the random Pokemon picker and generator.
           </p>
         )}
         {results.length > 0 && (
