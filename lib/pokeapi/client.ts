@@ -274,6 +274,21 @@ export async function fetchPokemon(id: number): Promise<Pokemon> {
 }
 
 /**
+ * 按名称拉取单只 Pokemon（合并 /pokemon/{name} + /pokemon-species/{name}）
+ * @param name 英文名（小写，如 "pikachu"）
+ */
+export async function fetchPokemonByName(name: string): Promise<Pokemon> {
+  const lowerName = name.toLowerCase().trim();
+  const [pokemonRes, speciesRes] = await Promise.all([
+    cachedFetch<PokeApiPokemonResponse>(`${POKEAPI_BASE}/pokemon/${lowerName}`),
+    cachedFetch<PokeApiSpeciesResponse>(
+      `${POKEAPI_BASE}/pokemon-species/${lowerName}`,
+    ),
+  ]);
+  return transformPokemon(pokemonRes, speciesRes);
+}
+
+/**
  * 批量 fetch [startId, endId] 闭区间内的 Pokemon。
  * 用 Promise.all 按 50 一批控制并发（避免触发 PokeAPI 300/min 限流）。
  *

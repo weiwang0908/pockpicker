@@ -8,6 +8,7 @@ import { generateRandomAction } from '@/app/lib/actions';
 import { trackEvent } from '@/app/lib/analytics';
 import type { Pokemon as CardPokemon } from '@/app/lib/type-data';
 import { Logo } from './Logo';
+import { SiteHeader } from './SiteHeader';
 
 /* -------------------------------------------------------------------------- */
 /* Component                                                                   */
@@ -95,37 +96,27 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
 
   return (
     <main className="flex flex-1 flex-col">
-      {/* Logo bar */}
-      <header className="sticky top-0 z-30 border-b border-zinc-100 bg-background/80 backdrop-blur-md">
-        <div className="mx-auto flex w-full max-w-5xl items-center gap-2 px-6 py-3">
-          <Logo className="h-5 w-5" />
-          <span className="text-base font-bold tracking-tight text-foreground">
-            PokePicker
-          </span>
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* 1. Hero */}
-      <section className="mx-auto flex w-full max-w-3xl flex-col items-center px-6 py-12 text-center sm:py-20 md:py-28">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-          Random Pokemon Picker & Generator
+      <section className="mx-auto flex w-full max-w-3xl flex-col items-center px-6 py-10 text-center sm:py-14">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          Random Pokemon Picker &amp; Generator
         </h1>
-        <p className="mt-5 max-w-xl text-base text-muted sm:text-lg">
-          Generate a random Pokémon from all 1025 species in one click. This
-          random Pokemon picker and generator helps you build teams, run
-          Nuzlocke challenges, or find drawing inspiration instantly.
+        <p className="mt-2 max-w-xl text-sm text-muted">
+          Generate a random Pokémon from all 1025 species in one click.
         </p>
-        <div className="mt-9 flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:justify-center">
+        <div className="mt-6 flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:justify-center">
           <button
             type="button"
             onClick={handlePick}
             disabled={isGenerating}
-            className="inline-flex w-full max-w-md items-center justify-center rounded-full bg-brand px-8 py-3.5 text-base font-semibold text-white shadow-sm transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+            className="inline-flex h-11 w-full max-w-md items-center justify-center rounded-full bg-brand px-8 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
           >
             {isGenerating ? 'Picking…' : 'Pick Random Pokémon'}
           </button>
         </div>
-        <p className="mt-3 text-xs text-muted">
+        <p className="mt-2 text-xs text-muted">
           Default: 6 Pokémon · Use the Count filter below to pick 1 or 3
         </p>
       </section>
@@ -180,18 +171,16 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
 
       {/* 4. Popular Tools */}
       <section className="border-t border-zinc-100 bg-zinc-50/60">
-        <div className="mx-auto w-full max-w-5xl px-6 py-16">
+        <div className="mx-auto w-full max-w-3xl px-6 py-16">
           <h2 className="mb-8 text-center text-2xl font-bold tracking-tight text-foreground">
             Popular Tools
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <ToolCard
-              href="/random-pokemon-team-generator"
-              title="Team Generator"
+              href="/pokemon-team-builder"
+              title="Pokemon Team Builder"
             />
-            <ToolCard href="/pokemon-starter-picker" title="Starter Picker" />
             <ComingSoonCard title="Legendary Generator" />
-            <ComingSoonCard title="Shiny Generator" />
           </div>
         </div>
       </section>
