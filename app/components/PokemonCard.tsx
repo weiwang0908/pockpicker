@@ -72,6 +72,8 @@ export function PokemonCard({
           <img
             src={pokemon.sprite}
             alt={pokemon.name}
+            width={475}
+            height={475}
             className="h-full w-full object-contain"
             loading="lazy"
             draggable={false}

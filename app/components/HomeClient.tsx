@@ -140,7 +140,7 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
           <EmptyResults />
         ) : (
           <p className="text-center text-sm text-muted">
-            Tap &ldquo;Pick Random Pokémon&rdquo; to start using the random Pokemon picker and generator.
+            Tap &ldquo;Pick Random Pokémon&rdquo; to start using PokePicker.
           </p>
         )}
         {results.length > 0 && (
@@ -163,8 +163,8 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
           Filters
         </h2>
         <p className="mb-6 text-center text-sm text-muted">
-          Fine-tune your random Pokemon picker results by generation, type,
-          legendary status, shiny form and team size.
+          Fine-tune your results by generation, type, legendary status,
+          shiny form and team size.
         </p>
         <Filters filter={filter} onChange={handleFilterChange} />
       </section>
@@ -199,9 +199,11 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
           at random from all 1025 species across generations 1 to 9. Pick a
           single Pokémon or generate a full team of six, with optional filters
           for generation, type, legendary status and shiny form. Whether you
-          need a random Pokemon picker for Nuzlocke challenges, team building,
-          art prompts or drawing inspiration, you get a fair, instant pick every
-          time.
+          need a quick pick for Nuzlocke challenges, team building, art prompts
+          or drawing inspiration, you get a fair, instant selection every time —
+          no login, no install, no waiting. The entire Pokédex from Bulbasaur
+          to Pecharunt is available, and every pick is uniformly distributed,
+          so every species has an equal chance of appearing.
         </p>
 
         <h2 className="mt-12 text-2xl font-bold tracking-tight text-foreground">
@@ -211,15 +213,15 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
           {[
             {
               step: '1',
-              text: 'Set your filters — choose a generation, type, legendary status or shiny form.',
+              text: 'Set your filters — choose a generation, type, legendary status or shiny form, or leave them on All for the full Pokédex.',
             },
             {
               step: '2',
-              text: 'Click “Pick Random Pokémon” and the random Pokemon picker instantly selects up to six Pokémon.',
+              text: 'Click “Pick Random Pokémon” and the random Pokemon picker instantly selects up to six Pokémon from your filtered pool.',
             },
             {
               step: '3',
-              text: 'Re-roll, adjust filters or share your favorite picks with the built-in share card.',
+              text: 'Re-roll for new picks, adjust filters to narrow the pool, or share your favorite results with the built-in share card.',
             },
           ].map((item) => (
             <li
@@ -237,11 +239,35 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-muted">
           PokePicker covers every Pokémon from generations 1 through 9, so you
-          always get a valid, fair pick from the full Pokédex. The random Pokemon
-          picker is free, works without signup, and runs smoothly on mobile and
-          desktop. Advanced filters let you narrow results to a single generation,
-          type, legendary pool or shiny form, while the default six-Pokémon team
-          mode is perfect for quick team building.
+          always get a valid, fair pick from the full Pokédex. The picker is
+          free, works without signup, and runs smoothly on both mobile and
+          desktop. Advanced filters let you narrow results to a single
+          generation, type, legendary pool or shiny form, while the default
+          six-Pokémon team mode is perfect for quick team building. Results
+          load instantly thanks to server-side rendering and a cached PokeAPI
+          layer, so there&rsquo;s no spinner on the first pick. Each result card
+          shows the Pokémon&rsquo;s name, type, Pokédex number, generation, height,
+          weight, abilities and type weaknesses — everything you need to decide
+          whether to keep or re-roll.
+        </p>
+
+        <h2 className="mt-12 text-2xl font-bold tracking-tight text-foreground">
+          Picker vs Generator: What&rsquo;s the Difference?
+        </h2>
+        <p className="mt-3 text-sm leading-relaxed text-muted">
+          People often use the words “picker” and “generator” interchangeably,
+          but there&rsquo;s a subtle distinction. A picker selects from an existing
+          pool — in this case, all 1025 Pokémon across every generation. A
+          generator can imply creating something new, like a random team
+          composition or a themed squad built around a specific type.
+          PokePicker does both: it picks individual species at random and can
+          also generate a full six-Pokémon team in a single click. Whether
+          you call it a picker, a generator or simply a randomizer, the result
+          is the same — a fair, unpredictable selection from the complete
+          Pokédex, rendered as a shareable card with official artwork, type
+          badges and dex metadata. You can think of it as a digital hat full
+          of every Pokémon ever created, ready to draw from whenever you need
+          inspiration or a fair random choice.
         </p>
 
         <h2 className="mt-12 text-2xl font-bold tracking-tight text-foreground">
@@ -255,7 +281,7 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
             },
             {
               title: 'Nuzlocke challenges',
-              desc: 'Let the random Pokemon picker decide your encounters and keep runs fresh.',
+              desc: 'Let the tool decide your encounters and keep every run fresh and unpredictable.',
             },
             {
               title: 'Art prompts',
@@ -265,6 +291,14 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
               title: 'Drawing inspiration',
               desc: 'Break creative block with an instant, unexpected Pokémon choice.',
             },
+            {
+              title: 'Type-themed runs',
+              desc: 'Pick only Fire, Water or Grass types for a monotype challenge run.',
+            },
+            {
+              title: 'Trivia and games',
+              desc: 'Quiz friends on Pokémon names, types and dex numbers using random picks.',
+            },
           ].map((use) => (
             <li key={use.title} className="rounded-xl border border-zinc-100 bg-surface p-4">
               <span className="font-semibold text-foreground">{use.title}</span>
@@ -272,6 +306,16 @@ export default function HomeClient({ faqItems, initialResults }: HomeClientProps
             </li>
           ))}
         </ul>
+
+        <p className="mt-6 text-sm leading-relaxed text-muted">
+          Beyond the use cases above, PokePicker is handy for classroom
+          activities, Pokémon-themed party games, deciding which plushie to buy
+          next, or simply killing time with friends. Because every pick is
+          random and covers the full National Pokédex, the tool is suitable for
+          fans of any generation — whether you grew up with Gen 1 classics or
+          discovered the franchise through Gen 9&apos;s Paldea region. No matter
+          how you use it, the result is always a surprise.
+        </p>
 
         <h2 className="mt-12 text-2xl font-bold tracking-tight text-foreground">
           FAQ

@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useCallback, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import {
   darkenColor,
@@ -25,35 +25,67 @@ export function ShareButton({ pokemon }: ShareButtonProps) {
   const [open, setOpen] = useState(false);
   const [dataUrl, setDataUrl] = useState<string | null>(null);
   const [copyState, setCopyState] = useState<"idle" | "ok" | "err">("idle");
+  // Only mount the off-screen share card when capturing, so the initial HTML
+  // doesn't contain 6 copies of "PokePicker www.pokepicker.app" hidden text
+  // (which polluted keyword density and could be flagged as hidden text).
+  const [cardMounted, setCardMounted] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const handleShare = useCallback(async () => {
-    if (generating || !cardRef.current) return;
+  // Capture the share card once it has been mounted into the DOM.
+  useEffect(() => {
+    if (!cardMounted) return;
+    let cancelled = false;
+
+    const capture = async () => {
+      // Wait two frames so React has committed and the browser has painted.
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => resolve()),
+      );
+      if (cancelled || !cardRef.current) {
+        setCardMounted(false);
+        setGenerating(false);
+        return;
+      }
+      try {
+        // html2canvas on the off-screen 1080x1080 share card.
+        // Share card uses ONLY inline hex/rgb styles (no Tailwind utilities)
+        // to avoid html2canvas choking on Tailwind v4 oklch() colors.
+        const canvas = await html2canvas(cardRef.current, {
+          width: SHARE_SIZE,
+          height: SHARE_SIZE,
+          windowWidth: SHARE_SIZE,
+          windowHeight: SHARE_SIZE,
+          backgroundColor: null,
+          useCORS: true,
+          allowTaint: false,
+          scale: SHARE_SCALE,
+          logging: false,
+        });
+        if (cancelled) return;
+        setDataUrl(canvas.toDataURL("image/png"));
+        setCopyState("idle");
+        setOpen(true);
+      } catch (err) {
+        console.error("Failed to generate share image:", err);
+      } finally {
+        if (!cancelled) {
+          setGenerating(false);
+          setCardMounted(false);
+        }
+      }
+    };
+
+    void capture();
+    return () => {
+      cancelled = true;
+    };
+  }, [cardMounted]);
+
+  const handleShare = useCallback(() => {
+    if (generating) return;
     setGenerating(true);
     trackEvent("share_click", { pokemon: pokemon.name, id: pokemon.id });
-    try {
-      // html2canvas on the off-screen 1080x1080 share card.
-      // Share card uses ONLY inline hex/rgb styles (no Tailwind utilities)
-      // to avoid html2canvas choking on Tailwind v4 oklch() colors.
-      const canvas = await html2canvas(cardRef.current, {
-        width: SHARE_SIZE,
-        height: SHARE_SIZE,
-        windowWidth: SHARE_SIZE,
-        windowHeight: SHARE_SIZE,
-        backgroundColor: null,
-        useCORS: true,
-        allowTaint: false,
-        scale: SHARE_SCALE,
-        logging: false,
-      });
-      setDataUrl(canvas.toDataURL("image/png"));
-      setCopyState("idle");
-      setOpen(true);
-    } catch (err) {
-      console.error("Failed to generate share image:", err);
-    } finally {
-      setGenerating(false);
-    }
+    setCardMounted(true);
   }, [generating, pokemon.name, pokemon.id]);
 
   const handleDownload = useCallback(() => {
@@ -84,20 +116,23 @@ export function ShareButton({ pokemon }: ShareButtonProps) {
 
   return (
     <>
-      {/* Off-screen 1080x1080 share card (rendered for html2canvas capture) */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: "fixed",
-          left: "-99999px",
-          top: 0,
-          width: SHARE_SIZE,
-          height: SHARE_SIZE,
-          pointerEvents: "none",
-        }}
-      >
-        <ShareCardArt ref={cardRef} pokemon={pokemon} />
-      </div>
+      {/* Off-screen 1080x1080 share card — only mounted during capture to
+          avoid polluting initial HTML with hidden text (SEO density noise). */}
+      {cardMounted && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            left: "-99999px",
+            top: 0,
+            width: SHARE_SIZE,
+            height: SHARE_SIZE,
+            pointerEvents: "none",
+          }}
+        >
+          <ShareCardArt ref={cardRef} pokemon={pokemon} />
+        </div>
+      )}
 
       <button
         type="button"
@@ -177,6 +212,8 @@ const ShareCardArt = forwardRef<HTMLDivElement, { pokemon: Pokemon }>(
               src={pokemon.sprite}
               alt={pokemon.name}
               crossOrigin="anonymous"
+              width={475}
+              height={475}
               style={{
                 maxWidth: "100%",
                 maxHeight: "100%",
