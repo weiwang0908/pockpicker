@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import HomeClient from '@/app/components/HomeClient';
-import { ToolCard } from '@/app/components/HomeClient';
 import { getRandomPokemon } from '@/lib/pokeapi/client';
 import { toCardPokemon } from '@/app/lib/pokemon-mapper';
 import type { Pokemon as CardPokemon } from '@/app/lib/type-data';
@@ -115,20 +114,7 @@ export default async function TeamGeneratorPage() {
         heroTitle="Random Pokemon Team Generator"
         heroSubtitle="Generate a full team of six random Pokémon from all 1025 species in one click."
         heroHint="Default: 6 Pokémon per team · Use the Count filter to pick 1 or 3"
-        popularTools={
-          <section className="border-t border-zinc-100 bg-zinc-50/60">
-            <div className="mx-auto w-full max-w-3xl px-6 py-16">
-              <h2 className="mb-8 text-center text-2xl font-bold tracking-tight text-foreground">
-                Popular Tools
-              </h2>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <ToolCard href="/" title="Random Pokemon Picker" />
-                <ToolCard href="/pokemon-natures" title="Pokemon Natures Guide" />
-                <ToolCard href="/pokemon-team-builder" title="Pokemon Team Builder" />
-              </div>
-            </div>
-          </section>
-        }
+        popularTools={null}
         seoContent={
           <>
             <h2 className="text-2xl font-bold tracking-tight text-foreground">
