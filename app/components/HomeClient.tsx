@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import Link from 'next/link';
 import Filters from './Filters';
 import { PokemonCardList } from './PokemonCardList';
 import { defaultFilter, type FilterOptions } from './Filters';
@@ -383,25 +384,25 @@ export default function HomeClient({
             <Logo className="h-4 w-4" />
             PokePicker
           </div>
-          <nav className="flex gap-5 text-sm text-muted">
-            <a href="/about" className="transition-colors hover:text-brand">
+          <nav className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted">
+            <Link href="/" className="transition-colors hover:text-brand">
+              Home
+            </Link>
+            <Link href="/random-pokemon-team-generator" className="transition-colors hover:text-brand">
+              Team Generator
+            </Link>
+            <Link href="/pokemon-natures" className="transition-colors hover:text-brand">
+              Pokemon Natures
+            </Link>
+            <Link href="/about" className="transition-colors hover:text-brand">
               About
-            </a>
-            <a href="/privacy" className="transition-colors hover:text-brand">
+            </Link>
+            <Link href="/privacy" className="transition-colors hover:text-brand">
               Privacy
-            </a>
-            <a href="/contact" className="transition-colors hover:text-brand">
+            </Link>
+            <Link href="/contact" className="transition-colors hover:text-brand">
               Contact
-            </a>
-            <a href="/api" className="transition-colors hover:text-brand">
-              API
-            </a>
-            <a
-              href="/resources"
-              className="transition-colors hover:text-brand"
-            >
-              Resources
-            </a>
+            </Link>
           </nav>
         </div>
       </footer>

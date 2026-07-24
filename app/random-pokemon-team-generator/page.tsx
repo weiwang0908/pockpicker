@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import HomeClient from '@/app/components/HomeClient';
 import { getRandomPokemon } from '@/lib/pokeapi/client';
 import { toCardPokemon } from '@/app/lib/pokemon-mapper';
@@ -185,9 +186,9 @@ export default async function TeamGeneratorPage() {
               surrounding content focuses on team building. If you only need a
               single random Pokémon — for an art prompt, a Nuzlocke encounter,
               or a quick decision — the{' '}
-              <a href="/" className="text-brand underline">
+              <Link href="/" className="text-brand underline">
                 random Pokemon picker
-              </a>{' '}
+              </Link>{' '}
               lets you switch the Count filter to 1. Both tools share the same
               engine and the same full Pokédex, so pick whichever matches what
               you&rsquo;re trying to do.

@@ -129,6 +129,18 @@ export default async function PokemonNaturesPage() {
         </ul>
       </section>
 
+      {/* Cross-link to Team Generator */}
+      <section className="mx-auto w-full max-w-3xl px-6 pb-8">
+        <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+          Once you&rsquo;ve picked the right nature, why not put it to the test?
+          Use our{' '}
+          <Link href="/random-pokemon-team-generator" className="text-brand underline">
+            random Pokemon team generator
+          </Link>{' '}
+          to roll a full squad and see how your nature choices play out in battle.
+        </p>
+      </section>
+
       {/* SEO: FAQ */}
       <section className="mx-auto w-full max-w-3xl px-6 pb-16">
         <h2 className="text-2xl font-bold text-foreground">
@@ -148,6 +160,21 @@ export default async function PokemonNaturesPage() {
           <span>&copy; 2026 PokePicker</span>
           <Link href="/" className="transition-colors hover:text-brand">
             Home
+          </Link>
+          <Link href="/random-pokemon-team-generator" className="transition-colors hover:text-brand">
+            Team Generator
+          </Link>
+          <Link href="/pokemon-team-builder" className="transition-colors hover:text-brand">
+            Team Builder
+          </Link>
+          <Link href="/about" className="transition-colors hover:text-brand">
+            About
+          </Link>
+          <Link href="/privacy" className="transition-colors hover:text-brand">
+            Privacy
+          </Link>
+          <Link href="/contact" className="transition-colors hover:text-brand">
+            Contact
           </Link>
         </div>
       </footer>
