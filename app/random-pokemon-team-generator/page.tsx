@@ -114,6 +114,7 @@ export default async function TeamGeneratorPage() {
         heroTitle="Random Pokemon Team Generator"
         heroSubtitle="Generate a full team of six random Pokémon from all 1025 species in one click."
         heroHint="Default: 6 Pokémon per team · Use the Count filter to pick 1 or 3"
+        buttonText="Generate Random Team"
         popularTools={null}
         seoContent={
           <>

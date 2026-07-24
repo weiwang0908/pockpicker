@@ -10,6 +10,7 @@ interface Tool {
 }
 
 const TOOLS: Tool[] = [
+  { href: "/random-pokemon-team-generator", label: "Random Team Generator" },
   { href: "/pokemon-team-builder", label: "Pokemon Team Builder" },
   { href: "/pokemon-natures", label: "Pokemon Natures" },
 ];

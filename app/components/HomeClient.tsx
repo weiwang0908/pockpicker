@@ -28,6 +28,8 @@ interface HomeClientProps {
   seoContent?: ReactNode;
   /** 自定义 Popular Tools 卡片列表（默认为首页的工具集） */
   popularTools?: ReactNode;
+  /** 自定义 CTA 按钮文案 */
+  buttonText?: string;
 }
 
 export default function HomeClient({
@@ -38,6 +40,7 @@ export default function HomeClient({
   heroHint = 'Default: 6 Pokémon · Use the Count filter below to pick 1 or 3',
   seoContent,
   popularTools,
+  buttonText = 'Pick Random Pokémon',
 }: HomeClientProps) {
   const [filter, setFilter] = useState<FilterOptions>(defaultFilter);
   const [results, setResults] = useState<CardPokemon[]>(initialResults);
@@ -131,7 +134,7 @@ export default function HomeClient({
             disabled={isGenerating}
             className="inline-flex h-11 w-full max-w-md items-center justify-center rounded-full bg-brand px-8 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
           >
-            {isGenerating ? 'Picking…' : 'Pick Random Pokémon'}
+            {isGenerating ? 'Generating…' : buttonText}
           </button>
         </div>
         <p className="mt-2 text-xs text-muted">
