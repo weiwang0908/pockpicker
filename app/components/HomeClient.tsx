@@ -36,7 +36,7 @@ interface HomeClientProps {
 export default function HomeClient({
   faqItems,
   initialResults,
-  heroTitle = 'Random Pokemon Picker &amp; Generator',
+  heroTitle = 'Random Pokemon Picker & Generator',
   heroSubtitle = 'Generate a random Pokémon from all 1025 species in one click.',
   heroHint = 'Default: 6 Pokémon · Use the Count filter below to pick 1 or 3',
   seoContent,
