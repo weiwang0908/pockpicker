@@ -243,6 +243,15 @@ export default async function TeamGeneratorPage() {
               generation, you might get a Gen 1 starter alongside an obscure
               Gen 8 Pokémon, which is part of what makes each roll unique.
             </p>
+
+            <p className="mt-6 text-sm leading-relaxed text-muted">
+              Once you have your team, check out our{' '}
+              <Link href="/pokemon-natures" className="text-brand underline">
+                Pokemon natures chart
+              </Link>{' '}
+              to find the best nature for each team member and give them the
+              right stat boosts for their role.
+            </p>
           </>
         }
       />

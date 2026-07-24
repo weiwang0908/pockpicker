@@ -9,21 +9,36 @@ import {
   COMPETITIVE_TEXT,
   COMPETITIVE_ITEMS,
   FAQ_ITEMS,
+  NATURE_DETAILS,
 } from "./seo-content";
 import { fetchAllPokemonList } from "@/lib/pokeapi/data";
 import { SiteHeader } from "@/app/components/SiteHeader";
+import {
+  NATURES,
+  STAT_DISPLAY,
+  isNeutral,
+  type Flavor,
+} from "@/lib/pokeapi/natures";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pokepicker.app";
+
+const FLAVOR_DISPLAY: Record<Flavor, string> = {
+  spicy: "Spicy",
+  sour: "Sour",
+  sweet: "Sweet",
+  dry: "Dry",
+  bitter: "Bitter",
+};
 
 const WEB_APP_JSON_LD = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "Pokemon Natures Guide",
+  name: "Pokemon Natures Chart",
   url: `${baseUrl}/pokemon-natures`,
   applicationCategory: "UtilityApplication",
   operatingSystem: "Any",
   description:
-    "Every Pokemon nature explained. See all 25 natures, which stat each one raises and lowers, and get the best nature recommendation for any Pokemon.",
+    "Every Pokemon nature explained. See the full Pokemon natures chart with all 25 natures, which stat each one raises and lowers, and get the best nature recommendation for any Pokemon.",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
 };
 
@@ -37,19 +52,33 @@ const FAQ_JSON_LD = {
   })),
 };
 
+const ITEM_LIST_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "Pokemon Natures Chart",
+  itemListElement: NATURES.map((n, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    name: n.displayName,
+    description: isNeutral(n)
+      ? `${n.displayName} is a neutral nature with no stat change.`
+      : `${n.displayName} increases ${STAT_DISPLAY[n.increased]} by 10% and decreases ${STAT_DISPLAY[n.decreased]} by 10%.`,
+  })),
+};
+
 export const metadata: Metadata = {
   title: {
     absolute:
-      "Pokemon Natures — Complete List & Best Nature Guide | PokePicker",
+      "Pokemon Natures Chart: Full List & Best Nature Guide (2025) | PokePicker",
   },
   description:
-    "Every Pokemon nature explained. See all 25 natures, which stat each one raises and lowers, and get the best nature recommendation for any Pokemon. Free, no signup.",
+    "Complete Pokemon natures chart with all 25 natures. See which stat each nature raises and lowers, find the best nature for any Pokemon, and get a free recommendation. No signup.",
   alternates: { canonical: "/pokemon-natures" },
   openGraph: {
     title:
-      "Pokemon Natures — Complete List & Best Nature Guide | PokePicker",
+      "Pokemon Natures Chart: Full List & Best Nature Guide (2025) | PokePicker",
     description:
-      "Every Pokemon nature explained. See all 25 natures, which stat each one raises and lowers, and get the best nature recommendation for any Pokemon. Free, no signup.",
+      "Complete Pokemon natures chart with all 25 natures. See which stat each nature raises and lowers, find the best nature for any Pokemon, and get a free recommendation. No signup.",
   },
 };
 
@@ -81,6 +110,70 @@ export default async function PokemonNaturesPage() {
         </p>
       </section>
 
+      {/* SEO: Full natures chart table (server-rendered, snippet-friendly) */}
+      <section className="mx-auto w-full max-w-4xl px-6 pb-16">
+        <h2 className="text-2xl font-bold text-foreground">
+          Pokemon Natures Chart — Full List
+        </h2>
+        <p className="mt-4 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+          Below is the complete Pokemon natures chart in table form. Each nature
+          raises one stat by 10% and lowers another by 10%. The five neutral
+          natures raise and lower the same stat, so they have no effect.
+        </p>
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-zinc-200 dark:border-zinc-700">
+                <th className="px-3 py-2 text-left font-semibold text-foreground">Nature</th>
+                <th className="px-3 py-2 text-left font-semibold text-foreground">Increases (+10%)</th>
+                <th className="px-3 py-2 text-left font-semibold text-foreground">Decreases (-10%)</th>
+                <th className="px-3 py-2 text-left font-semibold text-foreground">Liked Flavor</th>
+                <th className="px-3 py-2 text-left font-semibold text-foreground">Disliked Flavor</th>
+              </tr>
+            </thead>
+            <tbody>
+              {NATURES.map((nature) => {
+                const neutral = isNeutral(nature);
+                return (
+                  <tr
+                    key={nature.id}
+                    className="border-b border-zinc-100 dark:border-zinc-800"
+                  >
+                    <td className="px-3 py-2 font-medium text-foreground">
+                      {nature.displayName}
+                    </td>
+                    <td className="px-3 py-2 text-zinc-600 dark:text-zinc-300">
+                      {neutral ? (
+                        <span className="text-zinc-400">No effect</span>
+                      ) : (
+                        <span className="text-green-600 dark:text-green-400">
+                          {STAT_DISPLAY[nature.increased]}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2 text-zinc-600 dark:text-zinc-300">
+                      {neutral ? (
+                        <span className="text-zinc-400">No effect</span>
+                      ) : (
+                        <span className="text-red-600 dark:text-red-400">
+                          {STAT_DISPLAY[nature.decreased]}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2 text-zinc-600 dark:text-zinc-300">
+                      {FLAVOR_DISPLAY[nature.likesFlavor]}
+                    </td>
+                    <td className="px-3 py-2 text-zinc-600 dark:text-zinc-300">
+                      {FLAVOR_DISPLAY[nature.hatesFlavor]}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       {/* SEO: How to choose */}
       <section className="mx-auto w-full max-w-3xl px-6 pb-16">
         <h2 className="text-2xl font-bold text-foreground">
@@ -104,6 +197,50 @@ export default async function PokemonNaturesPage() {
         <p className="mt-4 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
           {NATURE_CHART_TEXT}
         </p>
+      </section>
+
+      {/* SEO: Individual nature details (targets long-tail keywords) */}
+      <section className="mx-auto w-full max-w-3xl px-6 pb-16">
+        <h2 className="text-2xl font-bold text-foreground">
+          Each nature explained
+        </h2>
+        <p className="mt-4 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+          Here are the most popular Pokemon natures explained in detail — what
+          they do, which Pokemon benefit, and how to decide between similar
+          options.
+        </p>
+        <div className="mt-8 space-y-10">
+          {NATURE_DETAILS.map((detail) => (
+            <div key={detail.name} id={detail.name} className="scroll-mt-24">
+              <h3 className="text-xl font-bold text-foreground">
+                {detail.displayName} Nature
+              </h3>
+              <p className="mt-1 text-xs font-medium text-brand">
+                {detail.effectSummary}
+              </p>
+              <div className="mt-3 space-y-3 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+                <p>{detail.description}</p>
+                <p>
+                  <span className="font-semibold text-foreground">
+                    Best for:{" "}
+                  </span>
+                  {detail.bestFor}
+                </p>
+                <p>
+                  <span className="font-semibold text-foreground">
+                    When to use:{" "}
+                  </span>
+                  {detail.whenToUse}
+                </p>
+                <p>
+                  <span className="font-semibold text-foreground">
+                    {detail.comparison}
+                  </span>
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* SEO: Best natures for competitive */}
@@ -186,6 +323,10 @@ export default async function PokemonNaturesPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ITEM_LIST_JSON_LD) }}
       />
     </main>
   );
