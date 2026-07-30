@@ -169,3 +169,37 @@ export async function fetchPokemonStatsAction(
     return null;
   }
 }
+
+/* -------------------------------------------------------------------------- */
+/* Pokemon Nickname Generator Action                                           */
+/* -------------------------------------------------------------------------- */
+
+/** Nickname generator 返回的最小结构（含 types，用于按类型生成昵称词根） */
+export interface NicknamePokemon {
+  id: number;
+  name: string;
+  sprite: string;
+  types: PokemonType[];
+  genus: string;
+}
+
+/**
+ * 按名称查询 Pokemon（nickname generator 用）。
+ * 返回 types + genus，nickname 引擎按类型选择对应的词根。
+ */
+export async function fetchPokemonForNicknameAction(
+  name: string,
+): Promise<NicknamePokemon | null> {
+  try {
+    const p = await fetchPokemonByName(name);
+    return {
+      id: p.id,
+      name: p.species.displayNameEn || p.name,
+      sprite: pickSprite(p.sprites, false) ?? "",
+      types: p.types,
+      genus: p.species.genus,
+    };
+  } catch {
+    return null;
+  }
+}
