@@ -49,6 +49,8 @@ export default function HomeClient({
   const [resultKey, setResultKey] = useState(0);
   // 区分「初始未操作」与「操作后筛选无匹配」两种空状态
   const [hasPicked, setHasPicked] = useState(false);
+  // 折叠 Filters 面板，让首屏聚焦在结果上，避免 Filter 区块占据过多视口
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const resultRef = useRef<HTMLDivElement>(null);
   const scrollPendingRef = useRef(false);
@@ -143,7 +145,47 @@ export default function HomeClient({
         </p>
       </section>
 
-      {/* 2. Result */}
+      {/* 2. Filters (collapsible on desktop so first viewport stays focused on results) */}
+      <section className="mx-auto w-full max-w-3xl px-6 py-4">
+        <div className="rounded-2xl border border-zinc-100 bg-surface">
+          <button
+            type="button"
+            onClick={() => setFiltersOpen((v) => !v)}
+            aria-expanded={filtersOpen}
+            aria-controls="home-filters-panel"
+            className="flex w-full items-center justify-between gap-2 px-5 py-3 text-left"
+          >
+            <span className="flex items-baseline gap-2">
+              <span className="text-base font-bold text-foreground sm:text-lg">
+                Filters
+              </span>
+              <span className="text-xs text-muted">
+                Generation · Type · Count · Legendary · Shiny
+              </span>
+            </span>
+            <span
+              aria-hidden="true"
+              className={`text-muted transition-transform duration-200 ${filtersOpen ? 'rotate-180' : ''}`}
+            >
+              ▾
+            </span>
+          </button>
+          {filtersOpen && (
+            <div
+              id="home-filters-panel"
+              className="border-t border-zinc-100 px-5 pb-5 pt-4"
+            >
+              <p className="mb-4 text-xs text-muted">
+                Fine-tune your results by generation, type, legendary status,
+                shiny form and team size.
+              </p>
+              <Filters filter={filter} onChange={handleFilterChange} />
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* 3. Result */}
       <section
         ref={resultRef}
         className="mx-auto w-full max-w-5xl scroll-mt-20 px-6 py-12"
@@ -179,18 +221,6 @@ export default function HomeClient({
         )}
       </section>
 
-      {/* 3. Filters */}
-      <section className="mx-auto w-full max-w-3xl px-6 py-12">
-        <h2 className="mb-2 text-center text-2xl font-bold tracking-tight text-foreground">
-          Filters
-        </h2>
-        <p className="mb-6 text-center text-sm text-muted">
-          Fine-tune your results by generation, type, legendary status,
-          shiny form and team size.
-        </p>
-        <Filters filter={filter} onChange={handleFilterChange} />
-      </section>
-
       {/* 4. Popular Tools */}
       {popularTools !== undefined ? (
         popularTools
@@ -213,7 +243,10 @@ export default function HomeClient({
                 href="/pokemon-natures"
                 title="Pokemon Natures Guide"
               />
-              <ComingSoonCard title="Legendary Generator" />
+              <ToolCard
+                href="/pokemon-nickname-generator"
+                title="Pokemon Nickname Generator"
+              />
             </div>
           </div>
         </section>
@@ -472,57 +505,5 @@ export function ToolCard({ href, title }: { href: string; title: string }) {
         Visit
       </span>
     </a>
-  );
-}
-
-function ComingSoonCard({ title }: { title: string }) {
-  return (
-    <div className="flex flex-col rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5">
-      <div className="text-base font-semibold text-foreground">{title}</div>
-      <div className="mt-1 text-xs font-medium uppercase tracking-wide text-muted">
-        Coming soon
-      </div>
-      <div className="mt-4">
-        <NotifyMe toolName={title} />
-      </div>
-    </div>
-  );
-}
-
-function NotifyMe({ toolName }: { toolName: string }) {
-  const [done, setDone] = useState(false);
-  if (done) {
-    return (
-      <p className="text-xs font-medium text-brand">
-        Thanks! We&apos;ll notify you.
-      </p>
-    );
-  }
-  return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        trackEvent('notify_me_subscribe', { tool: toolName });
-        setDone(true);
-      }}
-      className="flex flex-col gap-2"
-    >
-      <label className="sr-only" htmlFor="notify-email">
-        Email
-      </label>
-      <input
-        id="notify-email"
-        type="email"
-        required
-        placeholder="you@example.com"
-        className="min-w-0 rounded-full border border-zinc-200 bg-surface px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-muted/70 focus:border-brand sm:text-xs sm:py-1.5"
-      />
-      <button
-        type="submit"
-        className="inline-flex w-fit items-center rounded-full border border-zinc-200 bg-surface px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-brand hover:text-brand sm:text-xs sm:py-1.5"
-      >
-        Notify me
-      </button>
-    </form>
   );
 }

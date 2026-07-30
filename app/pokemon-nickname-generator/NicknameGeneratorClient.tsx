@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchPokemonForNicknameAction, type NicknamePokemon } from "@/app/lib/actions";
 import { TYPE_MAP } from "@/lib/pokeapi/data";
 import {
@@ -24,9 +24,9 @@ interface SelectedPokemon extends NicknamePokemon {
 export default function NicknameGeneratorClient({
   pokemonList,
 }: NicknameGeneratorClientProps) {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState("Pikachu");
   const [selected, setSelected] = useState<SelectedPokemon | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<NicknameSuggestion[]>([]);
@@ -86,6 +86,24 @@ export default function NicknameGeneratorClient({
     }
   };
 
+  /**
+   * Generate button next to the search input.
+   * Prefers the first autocomplete match (normalized name),
+   * falls back to the raw search string (lowercased, hyphenated).
+   */
+  const handleGenerate = () => {
+    const normalized = search.toLowerCase().trim();
+    if (normalized === "") return;
+    const name = autocomplete[0]?.name ?? normalized.replace(/\s+/g, "-");
+    handleSelect(name);
+  };
+
+  // Auto-generate first batch with Pikachu on mount
+  useEffect(() => {
+    handleSelect("pikachu");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleRegenerate = () => {
     if (!selected) return;
     setSuggestions(
@@ -127,28 +145,38 @@ export default function NicknameGeneratorClient({
       {/* Search */}
       <section className="mt-8">
         <div className="relative">
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setShowSuggestions(true);
-              setError(null);
-            }}
-            onFocus={() => setShowSuggestions(true)}
-            onBlur={() => {
-              setTimeout(() => setShowSuggestions(false), 150);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && autocomplete.length > 0) {
-                e.preventDefault();
-                handleSelect(autocomplete[0].name);
-              }
-            }}
-            placeholder="Search a Pokemon (e.g. garchomp, pikachu, charizard)..."
-            aria-label="Search a Pokemon for nickname suggestions"
-            className="h-12 w-full rounded-xl border border-zinc-200 bg-surface px-4 text-sm text-foreground placeholder:text-zinc-400 focus:border-brand focus:outline-none dark:border-zinc-700"
-          />
+          <div className="flex gap-2">
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setShowSuggestions(true);
+                setError(null);
+              }}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => {
+                setTimeout(() => setShowSuggestions(false), 150);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleGenerate();
+                }
+              }}
+              placeholder="Search a Pokemon (e.g. garchomp, pikachu, charizard)..."
+              aria-label="Search a Pokemon for nickname suggestions"
+              className="h-12 min-w-0 flex-1 rounded-xl border border-zinc-200 bg-surface px-4 text-sm text-foreground placeholder:text-zinc-400 focus:border-brand focus:outline-none dark:border-zinc-700"
+            />
+            <button
+              type="button"
+              onClick={handleGenerate}
+              disabled={loading || search.trim() === ""}
+              className="inline-flex h-12 shrink-0 items-center justify-center rounded-xl bg-brand px-5 text-sm font-semibold text-white transition-colors hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {loading ? "..." : "⚡ Generate"}
+            </button>
+          </div>
           {showSuggestions && search.trim() !== "" && (
             <ul className="absolute z-20 mt-1 max-h-64 w-full overflow-auto rounded-xl border border-zinc-200 bg-surface shadow-lg dark:border-zinc-700">
               {autocomplete.length > 0 ? (
@@ -236,7 +264,7 @@ export default function NicknameGeneratorClient({
               onClick={handleRegenerate}
               className="inline-flex h-11 items-center justify-center rounded-xl bg-brand px-5 text-sm font-semibold text-white transition-colors hover:bg-brand/90"
             >
-              🔄 Generate
+              🔄 Re-roll
             </button>
           </div>
 
