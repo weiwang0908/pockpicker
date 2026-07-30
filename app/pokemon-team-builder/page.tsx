@@ -134,6 +134,24 @@ export default async function PokemonTeamBuilderPage() {
         </ul>
       </section>
 
+      {/* Cross-link to Team Generator and Natures */}
+      <section className="mx-auto w-full max-w-3xl px-6 pb-8">
+        <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+          Want a team generated for you instantly? Try our{' '}
+          <Link href="/random-pokemon-team-generator" className="text-brand underline">
+            random Pokemon team generator
+          </Link>{' '}
+          to roll a full squad of six in one click, then refine it here.
+        </p>
+        <p className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+          Need the right nature for each team member? Use our{' '}
+          <Link href="/pokemon-natures" className="text-brand underline">
+            Pokemon natures chart
+          </Link>{' '}
+          to find the best nature for any Pokemon based on its base stats.
+        </p>
+      </section>
+
       {/* SEO: FAQ */}
       <section className="mx-auto w-full max-w-3xl px-6 pb-16">
         <h2 className="text-2xl font-bold text-foreground">
@@ -153,6 +171,21 @@ export default async function PokemonTeamBuilderPage() {
           <span>&copy; 2026 PokePicker</span>
           <Link href="/" className="transition-colors hover:text-brand">
             Home
+          </Link>
+          <Link href="/random-pokemon-team-generator" className="transition-colors hover:text-brand">
+            Team Generator
+          </Link>
+          <Link href="/pokemon-natures" className="transition-colors hover:text-brand">
+            Pokemon Natures Chart
+          </Link>
+          <Link href="/about" className="transition-colors hover:text-brand">
+            About
+          </Link>
+          <Link href="/privacy" className="transition-colors hover:text-brand">
+            Privacy
+          </Link>
+          <Link href="/contact" className="transition-colors hover:text-brand">
+            Contact
           </Link>
         </div>
       </footer>

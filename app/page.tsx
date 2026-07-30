@@ -13,20 +13,20 @@ import type { Pokemon as CardPokemon } from '@/app/lib/type-data';
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: 'Random Pokemon Picker & Generator — Pick or Generate Any of 1025 Pokémon | PokePicker',
+  title: 'Random Pokemon Picker & Generator | PokePicker',
   description:
-    'Random Pokemon Picker & Generator: pick or generate a random Pokémon from all 1025 species in one click. Filter by generation, type, starter or legendary. Free, no signup. Perfect for team building, Nuzlocke challenges and art prompts.',
+    'Random Pokemon picker: pick from all 1025 species in one click. Filter by generation, type, legendary or shiny. Free, no signup.',
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'Random Pokemon Picker & Generator — Pick or Generate Any of 1025 Pokémon',
+    title: 'Random Pokemon Picker & Generator | PokePicker',
     description:
-      'Use this random Pokemon picker and generator to pick or generate a random Pokémon or full team from all 1025 species. Filter by generation, type, legendary and shiny. Free, no signup.',
+      'Random Pokemon picker: pick from all 1025 species in one click. Filter by generation, type, legendary or shiny. Free, no signup.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Random Pokemon Picker & Generator — Pick or Generate Any of 1025 Pokémon',
+    title: 'Random Pokemon Picker & Generator | PokePicker',
     description:
-      'Use this random Pokemon picker and generator to pick or generate a random Pokémon or full team from all 1025 species. Filter by generation, type, legendary and shiny.',
+      'Random Pokemon picker: pick from all 1025 species in one click. Filter by generation, type, legendary or shiny. Free, no signup.',
   },
 };
 
@@ -40,7 +40,7 @@ const FAQ_ITEMS: { q: string; a: string }[] = [
     a: 'Yes. PokePicker works as both a random Pokemon picker and generator. Click the button to instantly generate one or more Pokémon from the full Pokédex.',
   },
   {
-    q: 'How does this random Pokemon picker work?',
+    q: 'How does PokePicker work?',
     a: 'It randomly selects from all 1025 Pokémon via PokeAPI. Filter by generation, type, starter or legendary status, then generate your pick.',
   },
   {
@@ -68,7 +68,7 @@ const FAQ_ITEMS: { q: string; a: string }[] = [
     a: 'Yes, completely free. No sign-up, no ads. Just open the page and pick or generate a Pokémon instantly.',
   },
   {
-    q: 'Can I use this random Pokemon picker on mobile?',
+    q: 'Can I use PokePicker on mobile?',
     a: 'Yes. The page is fully responsive and touch-friendly, so you can generate random Pokémon on any phone or tablet.',
   },
   {

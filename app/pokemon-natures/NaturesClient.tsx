@@ -27,7 +27,7 @@ export default function NaturesClient({ pokemonList }: NaturesClientProps) {
       {/* Hero */}
       <section className="text-center">
         <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          Pokemon Natures
+          Pokemon Natures Chart
         </h1>
         <p className="mx-auto mt-2 max-w-xl text-sm text-zinc-500 dark:text-zinc-400">
           {HERO_TAGLINE}
