@@ -50,11 +50,45 @@ export interface GenerationRange {
 /** Legendary 过滤选项（三态） */
 export type LegendaryFilter = "any" | "include" | "only";
 
-/** Shiny 过滤选项（二态） */
-export type ShinyFilter = "off" | "on";
+/** Shiny 模式：关闭 / 按概率 roll / 必定闪光 */
+export type ShinyFilter =
+  | "off"
+  | "random-4096"
+  | "random-512"
+  | "random-100"
+  | "always";
 
 /** Starter 过滤选项（二态） */
 export type StarterFilter = "off" | "on";
+
+/** Mythical 过滤选项（二态） */
+export type MythicalFilter = "off" | "on";
+
+/** 地区枚举 */
+export type Region =
+  | "kanto"
+  | "johto"
+  | "hoenn"
+  | "sinnoh"
+  | "unova"
+  | "kalos"
+  | "alola"
+  | "galar"
+  | "paldea";
+
+/** 形态分类（用于 Forms filter） */
+export type FormCategory =
+  | "default"
+  | "mega"
+  | "gigantamax"
+  | "regional"
+  | "alolan"
+  | "galarian"
+  | "hisuian"
+  | "paldean";
+
+/** 进化阶段 */
+export type EvolutionStage = "unevolved" | "evolved-once" | "evolved-twice";
 
 /** Filter 维度（首页 + 工具页通用） */
 export interface FilterOptions {
@@ -68,6 +102,14 @@ export interface FilterOptions {
   shiny: ShinyFilter;
   /** Starter 筛选：off=不限 / on=仅御三家及其进化链 */
   starter: StarterFilter;
+  /** Mythical 筛选：off=不限 / on=仅幻之宝可梦 */
+  mythical: MythicalFilter;
+  /** 地区筛选，"all" 表示不限 */
+  region: Region | "all";
+  /** 形态筛选，"all" 表示不限 */
+  form: FormCategory | "all";
+  /** 进化阶段筛选，"all" 表示不限 */
+  evolutionStage: EvolutionStage | "all";
   /** 数量：1 / 3 / 6 */
   count: 1 | 3 | 6;
 }
@@ -125,13 +167,21 @@ export interface Pokemon {
   species: PokemonSpecies;
 }
 
-/** 最小信息列表项（用于本地筛选，无需 fetch species） */
+/** 最小信息列表项（用于本地筛选，无需 fetch 完整 Pokemon） */
 export interface PokemonListItem {
   id: number;
   /** 英文 name（小写） */
   name: string;
   types: PokemonType[];
   generation: Generation;
+  /** 地区（由 generation 映射） */
+  region: Region;
+  /** 是否幻之宝可梦 */
+  isMythical: boolean;
+  /** 进化阶段：0=未进化，1=进化一次，2=进化两次 */
+  evolutionStage: 0 | 1 | 2;
+  /** 该 Pokemon 拥有的形态分类（基于 species varieties，默认包含 default） */
+  formCategories: FormCategory[];
 }
 
 /** 默认 FilterOptions（首页 basic + advanced 全默认值） */
@@ -141,5 +191,9 @@ export const DEFAULT_FILTER_OPTIONS: FilterOptions = {
   legendary: "any",
   shiny: "off",
   starter: "off",
+  mythical: "off",
+  region: "all",
+  form: "all",
+  evolutionStage: "all",
   count: 1,
 };

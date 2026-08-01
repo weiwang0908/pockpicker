@@ -1,256 +1,432 @@
 /**
- * Pokemon Natures 静态数据（Gen 3 引入，25 个性格，数据固定不变）
+ * Pokemon nature data used by:
+ * - /pokemon-natures (nature chart + recommender + finder)
+ * - /pokemon-iv-calculator (stat modifier lookup)
  *
- * 数据来源：Bulbapedia 官方性格表 + PokeAPI /nature 端点结构
- * 参照 type-chart.ts 模式：静态常量，无运行时 fetch
+ * This module exports two slightly different representations:
+ * - `Nature` (with id, displayName, flavor info) for the natures page
+ * - `NatureInfo` (simplified, no flavor) for the IV calculator
  */
 
-/** 5 个受性格影响的战斗能力 */
-export type BattleStat = "attack" | "defense" | "sp-atk" | "sp-def" | "speed";
+/* -------------------------------------------------------------------------- */
+/* 5 项可被性格修正的战斗属性                                                   */
+/* -------------------------------------------------------------------------- */
 
-/** 5 种口味（对应树果偏好） */
-export type Flavor = "spicy" | "sour" | "sweet" | "dry" | "bitter";
+export type BattleStat =
+  | "attack"
+  | "defense"
+  | "special-attack"
+  | "special-defense"
+  | "speed";
 
-/** 单个性格数据 */
-export interface Nature {
-  id: number;
-  /** 小写 name，如 "adamant" */
-  name: string;
-  /** 首字母大写显示名 */
-  displayName: string;
-  /** 增加的能力，null 仅用于类型防御；中性性格 increased === decreased */
-  increased: BattleStat;
-  /** 减少的能力；中性性格 decreased === increased */
-  decreased: BattleStat;
-  /** 喜欢的口味 */
-  likesFlavor: Flavor;
-  /** 讨厌的口味 */
-  hatesFlavor: Flavor;
-}
-
-/** 口味 → 能力 映射 */
-export const FLAVOR_STAT_MAP: Record<Flavor, BattleStat> = {
-  spicy: "attack",
-  sour: "defense",
-  sweet: "speed",
-  dry: "sp-atk",
-  bitter: "sp-def",
-};
-
-/** 能力 → 口味 反向映射 */
-export const STAT_FLAVOR_MAP: Record<BattleStat, Flavor> = {
-  attack: "spicy",
-  defense: "sour",
-  "sp-atk": "dry",
-  "sp-def": "bitter",
-  speed: "sweet",
-};
-
-/** 能力显示名 */
-export const STAT_DISPLAY: Record<BattleStat, string> = {
-  attack: "Attack",
-  defense: "Defense",
-  "sp-atk": "Sp. Atk",
-  "sp-def": "Sp. Def",
-  speed: "Speed",
-};
-
-/** 5 个战斗能力（矩阵行/列顺序） */
 export const BATTLE_STATS: BattleStat[] = [
   "attack",
   "defense",
-  "sp-atk",
-  "sp-def",
+  "special-attack",
+  "special-defense",
   "speed",
 ];
 
-/**
- * 25 个性格完整列表（id 与 PokeAPI /nature/{id} 一致）
- *
- * 矩阵布局（行 = increased，列 = decreased）：
- *           -Atk   -Def   -SpA   -SpD   -Spe
- * +Atk      Hardy Lonely Adamant Naughty Brave
- * +Def      Bold  Docile Impish  Lax    Relaxed
- * +SpA      Modest Mild  Bashful Rash   Quiet
- * +SpD      Calm  Gentle Careful Quirky Sassy
- * +Spe      Timid Hasty Jolly   Naive  Serious
- */
+/** 6 项属性的显示名（包含 HP） */
+export const STAT_DISPLAY: Record<string, string> = {
+  hp: "HP",
+  attack: "Attack",
+  defense: "Defense",
+  "special-attack": "Sp. Atk",
+  "special-defense": "Sp. Def",
+  speed: "Speed",
+};
+
+/* -------------------------------------------------------------------------- */
+/* Nature 数据（完整版，给 natures 页面用）                                       */
+/* -------------------------------------------------------------------------- */
+
+export type Flavor = "spicy" | "sour" | "sweet" | "dry" | "bitter";
+
+export interface Nature {
+  id: number;
+  name: string;
+  displayName: string;
+  /** 增加的属性（neutral natures 为 null） */
+  increased: BattleStat | null;
+  /** 减少的属性（neutral natures 为 null） */
+  decreased: BattleStat | null;
+  likesFlavor: Flavor;
+  hatesFlavor: Flavor;
+}
+
 export const NATURES: Nature[] = [
-  { id: 1, name: "hardy", displayName: "Hardy", increased: "attack", decreased: "attack", likesFlavor: "spicy", hatesFlavor: "spicy" },
-  { id: 2, name: "lonely", displayName: "Lonely", increased: "attack", decreased: "defense", likesFlavor: "spicy", hatesFlavor: "sour" },
-  { id: 3, name: "adamant", displayName: "Adamant", increased: "attack", decreased: "sp-atk", likesFlavor: "spicy", hatesFlavor: "dry" },
-  { id: 4, name: "naughty", displayName: "Naughty", increased: "attack", decreased: "sp-def", likesFlavor: "spicy", hatesFlavor: "bitter" },
-  { id: 5, name: "brave", displayName: "Brave", increased: "attack", decreased: "speed", likesFlavor: "spicy", hatesFlavor: "sweet" },
-  { id: 6, name: "bold", displayName: "Bold", increased: "defense", decreased: "attack", likesFlavor: "sour", hatesFlavor: "spicy" },
-  { id: 7, name: "docile", displayName: "Docile", increased: "defense", decreased: "defense", likesFlavor: "sour", hatesFlavor: "sour" },
-  { id: 8, name: "impish", displayName: "Impish", increased: "defense", decreased: "sp-atk", likesFlavor: "sour", hatesFlavor: "dry" },
-  { id: 9, name: "lax", displayName: "Lax", increased: "defense", decreased: "sp-def", likesFlavor: "sour", hatesFlavor: "bitter" },
-  { id: 10, name: "relaxed", displayName: "Relaxed", increased: "defense", decreased: "speed", likesFlavor: "sour", hatesFlavor: "sweet" },
-  { id: 11, name: "modest", displayName: "Modest", increased: "sp-atk", decreased: "attack", likesFlavor: "dry", hatesFlavor: "spicy" },
-  { id: 12, name: "mild", displayName: "Mild", increased: "sp-atk", decreased: "defense", likesFlavor: "dry", hatesFlavor: "sour" },
-  { id: 13, name: "bashful", displayName: "Bashful", increased: "sp-atk", decreased: "sp-atk", likesFlavor: "dry", hatesFlavor: "dry" },
-  { id: 14, name: "rash", displayName: "Rash", increased: "sp-atk", decreased: "sp-def", likesFlavor: "dry", hatesFlavor: "bitter" },
-  { id: 15, name: "quiet", displayName: "Quiet", increased: "sp-atk", decreased: "speed", likesFlavor: "dry", hatesFlavor: "sweet" },
-  { id: 16, name: "calm", displayName: "Calm", increased: "sp-def", decreased: "attack", likesFlavor: "bitter", hatesFlavor: "spicy" },
-  { id: 17, name: "gentle", displayName: "Gentle", increased: "sp-def", decreased: "defense", likesFlavor: "bitter", hatesFlavor: "sour" },
-  { id: 18, name: "careful", displayName: "Careful", increased: "sp-def", decreased: "sp-atk", likesFlavor: "bitter", hatesFlavor: "dry" },
-  { id: 19, name: "quirky", displayName: "Quirky", increased: "sp-def", decreased: "sp-def", likesFlavor: "bitter", hatesFlavor: "bitter" },
-  { id: 20, name: "sassy", displayName: "Sassy", increased: "sp-def", decreased: "speed", likesFlavor: "bitter", hatesFlavor: "sweet" },
-  { id: 21, name: "timid", displayName: "Timid", increased: "speed", decreased: "attack", likesFlavor: "sweet", hatesFlavor: "spicy" },
-  { id: 22, name: "hasty", displayName: "Hasty", increased: "speed", decreased: "defense", likesFlavor: "sweet", hatesFlavor: "sour" },
-  { id: 23, name: "jolly", displayName: "Jolly", increased: "speed", decreased: "sp-atk", likesFlavor: "sweet", hatesFlavor: "dry" },
-  { id: 24, name: "naive", displayName: "Naive", increased: "speed", decreased: "sp-def", likesFlavor: "sweet", hatesFlavor: "bitter" },
-  { id: 25, name: "serious", displayName: "Serious", increased: "speed", decreased: "speed", likesFlavor: "sweet", hatesFlavor: "sweet" },
+  {
+    id: 1,
+    name: "hardy",
+    displayName: "Hardy",
+    increased: "attack",
+    decreased: "attack",
+    likesFlavor: "spicy",
+    hatesFlavor: "spicy",
+  },
+  {
+    id: 2,
+    name: "lonely",
+    displayName: "Lonely",
+    increased: "attack",
+    decreased: "defense",
+    likesFlavor: "spicy",
+    hatesFlavor: "sour",
+  },
+  {
+    id: 3,
+    name: "brave",
+    displayName: "Brave",
+    increased: "attack",
+    decreased: "speed",
+    likesFlavor: "spicy",
+    hatesFlavor: "sweet",
+  },
+  {
+    id: 4,
+    name: "adamant",
+    displayName: "Adamant",
+    increased: "attack",
+    decreased: "special-attack",
+    likesFlavor: "spicy",
+    hatesFlavor: "dry",
+  },
+  {
+    id: 5,
+    name: "naughty",
+    displayName: "Naughty",
+    increased: "attack",
+    decreased: "special-defense",
+    likesFlavor: "spicy",
+    hatesFlavor: "bitter",
+  },
+  {
+    id: 6,
+    name: "bold",
+    displayName: "Bold",
+    increased: "defense",
+    decreased: "attack",
+    likesFlavor: "sour",
+    hatesFlavor: "spicy",
+  },
+  {
+    id: 7,
+    name: "docile",
+    displayName: "Docile",
+    increased: "defense",
+    decreased: "defense",
+    likesFlavor: "sour",
+    hatesFlavor: "sour",
+  },
+  {
+    id: 8,
+    name: "relaxed",
+    displayName: "Relaxed",
+    increased: "defense",
+    decreased: "speed",
+    likesFlavor: "sour",
+    hatesFlavor: "sweet",
+  },
+  {
+    id: 9,
+    name: "impish",
+    displayName: "Impish",
+    increased: "defense",
+    decreased: "special-attack",
+    likesFlavor: "sour",
+    hatesFlavor: "dry",
+  },
+  {
+    id: 10,
+    name: "lax",
+    displayName: "Lax",
+    increased: "defense",
+    decreased: "special-defense",
+    likesFlavor: "sour",
+    hatesFlavor: "bitter",
+  },
+  {
+    id: 11,
+    name: "timid",
+    displayName: "Timid",
+    increased: "speed",
+    decreased: "attack",
+    likesFlavor: "sweet",
+    hatesFlavor: "spicy",
+  },
+  {
+    id: 12,
+    name: "hasty",
+    displayName: "Hasty",
+    increased: "speed",
+    decreased: "defense",
+    likesFlavor: "sweet",
+    hatesFlavor: "sour",
+  },
+  {
+    id: 13,
+    name: "serious",
+    displayName: "Serious",
+    increased: "speed",
+    decreased: "speed",
+    likesFlavor: "sweet",
+    hatesFlavor: "sweet",
+  },
+  {
+    id: 14,
+    name: "jolly",
+    displayName: "Jolly",
+    increased: "speed",
+    decreased: "special-attack",
+    likesFlavor: "sweet",
+    hatesFlavor: "dry",
+  },
+  {
+    id: 15,
+    name: "naive",
+    displayName: "Naive",
+    increased: "speed",
+    decreased: "special-defense",
+    likesFlavor: "sweet",
+    hatesFlavor: "bitter",
+  },
+  {
+    id: 16,
+    name: "modest",
+    displayName: "Modest",
+    increased: "special-attack",
+    decreased: "attack",
+    likesFlavor: "dry",
+    hatesFlavor: "spicy",
+  },
+  {
+    id: 17,
+    name: "mild",
+    displayName: "Mild",
+    increased: "special-attack",
+    decreased: "defense",
+    likesFlavor: "dry",
+    hatesFlavor: "sour",
+  },
+  {
+    id: 18,
+    name: "quiet",
+    displayName: "Quiet",
+    increased: "special-attack",
+    decreased: "speed",
+    likesFlavor: "dry",
+    hatesFlavor: "sweet",
+  },
+  {
+    id: 19,
+    name: "bashful",
+    displayName: "Bashful",
+    increased: "special-attack",
+    decreased: "special-attack",
+    likesFlavor: "dry",
+    hatesFlavor: "dry",
+  },
+  {
+    id: 20,
+    name: "rash",
+    displayName: "Rash",
+    increased: "special-attack",
+    decreased: "special-defense",
+    likesFlavor: "dry",
+    hatesFlavor: "bitter",
+  },
+  {
+    id: 21,
+    name: "calm",
+    displayName: "Calm",
+    increased: "special-defense",
+    decreased: "attack",
+    likesFlavor: "bitter",
+    hatesFlavor: "spicy",
+  },
+  {
+    id: 22,
+    name: "gentle",
+    displayName: "Gentle",
+    increased: "special-defense",
+    decreased: "defense",
+    likesFlavor: "bitter",
+    hatesFlavor: "sour",
+  },
+  {
+    id: 23,
+    name: "sassy",
+    displayName: "Sassy",
+    increased: "special-defense",
+    decreased: "speed",
+    likesFlavor: "bitter",
+    hatesFlavor: "sweet",
+  },
+  {
+    id: 24,
+    name: "careful",
+    displayName: "Careful",
+    increased: "special-defense",
+    decreased: "special-attack",
+    likesFlavor: "bitter",
+    hatesFlavor: "dry",
+  },
+  {
+    id: 25,
+    name: "quirky",
+    displayName: "Quirky",
+    increased: "special-defense",
+    decreased: "special-defense",
+    likesFlavor: "bitter",
+    hatesFlavor: "bitter",
+  },
 ];
 
-/** name → Nature 查找表 */
-const NATURE_MAP: Record<string, Nature> = Object.fromEntries(
-  NATURES.map((n) => [n.name, n]),
-);
-
-/** 判断是否为中性性格（increased === decreased，无实际效果） */
 export function isNeutral(nature: Nature): boolean {
   return nature.increased === nature.decreased;
 }
 
-/** 按 name 查询性格 */
-export function getNatureByName(name: string): Nature | undefined {
-  return NATURE_MAP[name.toLowerCase().trim()];
+/* -------------------------------------------------------------------------- */
+/* IV 计算器用的简化数据结构                                                     */
+/* -------------------------------------------------------------------------- */
+
+export interface NatureInfo {
+  name: string;
+  increased: BattleStat | null;
+  decreased: BattleStat | null;
 }
 
-/** 按 increased + decreased 查询性格（5×5 矩阵每个单元格唯一对应一个性格） */
-export function getNatureByStats(
-  increased: BattleStat,
-  decreased: BattleStat,
-): Nature {
-  return NATURES.find(
-    (n) => n.increased === increased && n.decreased === decreased,
-  )!;
+/** IV 计算器可直接遍历的 25 性格列表（不带 flavor 信息） */
+export const NATURE_INFOS: NatureInfo[] = NATURES.map((n) => ({
+  name: n.displayName,
+  increased: n.increased,
+  decreased: n.decreased,
+}));
+
+/** 根据性格名和属性名获取修正倍率 (1.1 / 0.9 / 1.0) */
+export function getNatureMultiplier(
+  natureName: string,
+  stat: BattleStat,
+): number {
+  const nature = NATURES.find(
+    (n) => n.displayName.toLowerCase() === natureName.toLowerCase(),
+  );
+  if (!nature) return 1;
+  if (nature.increased === stat && nature.decreased !== stat) return 1.1;
+  if (nature.decreased === stat && nature.increased !== stat) return 0.9;
+  return 1;
 }
 
-/** 按增加的能力筛选性格（包括中性性格，如 +Attack 含 Hardy） */
-export function getNaturesByIncreased(stat: BattleStat): Nature[] {
-  return NATURES.filter((n) => n.increased === stat);
-}
+/* -------------------------------------------------------------------------- */
+/* Nature recommender（基于 base stats 推荐最佳性格）                            */
+/* -------------------------------------------------------------------------- */
 
-/**
- * 简化的种族值 → 能力键映射
- * PokeAPI stat.name: "hp" | "attack" | "defense" | "special-attack" | "special-defense" | "speed"
- */
-type StatMap = Record<BattleStat, number>;
-
-function mapStats(stats: { name: string; baseStat: number }[]): StatMap {
-  const lookup: Record<string, BattleStat> = {
-    attack: "attack",
-    defense: "defense",
-    "special-attack": "sp-atk",
-    "special-defense": "sp-def",
-    speed: "speed",
-  };
-  const result: StatMap = { attack: 0, defense: 0, "sp-atk": 0, "sp-def": 0, speed: 0 };
-  for (const s of stats) {
-    const key = lookup[s.name];
-    if (key) result[key] = s.baseStat;
-  }
-  return result;
-}
-
-/** 推荐结果条目 */
 export interface NatureRecommendation {
   nature: Nature;
   reason: string;
 }
 
-/**
- * 基于种族值推荐最佳性格（Top 3）
- *
- * 推荐规则（简化但实用）：
- * 1. 比较 baseAttack vs baseSpAtk 判断物理/特殊攻击手
- * 2. 物理（Atk > SpA）：推荐 Adamant（+Atk/-SpA）；若 Speed 较高（>=100）推荐 Jolly（+Spe/-SpA）
- * 3. 特殊（SpA > Atk）：推荐 Modest（+SpA/-Atk）；若 Speed 较高推荐 Timid（+Spe/-Atk）
- * 4. 坦克（Def/SpD 高，Atk ≈ SpA）：推荐 Bold（+Def/-Atk）或 Calm（+SpD/-Atk）
- */
+/** 根据 base stats 推荐前几个性格 */
 export function recommendNatures(
   stats: { name: string; baseStat: number }[],
 ): NatureRecommendation[] {
-  const s = mapStats(stats);
-  const isPhysical = s.attack >= s["sp-atk"];
-  const isFast = s.speed >= 100;
+  // 排除 HP，只考虑 5 项战斗属性
+  const battleStats = stats.filter((s) => s.name !== "hp");
+  if (battleStats.length === 0) return [];
 
-  // Priority-ordered nature candidates for each attacking type.
-  const physicalOrder = [
-    getNatureByName("jolly")!,
-    getNatureByName("adamant")!,
-    getNatureByName("impish")!,
-    getNatureByName("brave")!,
-  ];
-  const specialOrder = [
-    getNatureByName("timid")!,
-    getNatureByName("modest")!,
-    getNatureByName("calm")!,
-    getNatureByName("quiet")!,
-  ];
+  // 找出最高和最低基础值
+  const sorted = battleStats.slice().sort((a, b) => b.baseStat - a.baseStat);
+  const highest = sorted[0];
+  const lowest = sorted[sorted.length - 1];
 
-  const order = isPhysical ? physicalOrder : specialOrder;
-  const selected = new Set<string>();
-  const recs: NatureRecommendation[] = [];
+  // 推荐优先级：
+  // 1. 提升最高项、降低最低项
+  // 2. 提升最高项、降低无用项（如果最低项不是攻击/特攻）
+  // 3. 常见泛用性格：固执、爽朗、胆小、内敛、大胆、淘气等
+  const candidates: NatureRecommendation[] = [];
 
-  function addReason(nature: Nature): void {
-    let reason: string;
-    if (nature.name === "jolly") {
-      reason = isFast
-        ? `${s.speed} base Speed makes this a fast physical attacker — Jolly outspeeds opponents.`
-        : `Boosts Speed while dropping the unused Sp. Atk — great if outspeeding opponents matters.`;
-    } else if (nature.name === "adamant") {
-      reason = `Higher Attack (${s.attack}) than Sp. Atk (${s["sp-atk"]}) — Adamant maximizes physical damage.`;
-    } else if (nature.name === "impish") {
-      reason = s.defense >= 100
-        ? `Solid Defense (${s.defense}) — Impish adds bulk while dropping the unused Sp. Atk.`
-        : `Adds physical bulk and drops the unused Sp. Atk.`;
-    } else if (nature.name === "brave") {
-      reason = `Maximizes Attack without caring about Speed — Brave drops the unused Speed stat.`;
-    } else if (nature.name === "timid") {
-      reason = isFast
-        ? `${s.speed} base Speed makes this a fast special attacker — Timid outspeeds opponents.`
-        : `Boosts Speed while dropping the unused Attack — helpful for faster special sets.`;
-    } else if (nature.name === "modest") {
-      reason = `Higher Sp. Atk (${s["sp-atk"]}) than Attack (${s.attack}) — Modest maximizes special damage.`;
-    } else if (nature.name === "calm") {
-      reason = s["sp-def"] >= 100
-        ? `Solid Special Defense (${s["sp-def"]}) — Calm adds bulk while dropping the unused Attack.`
-        : `Adds special bulk and drops the unused Attack.`;
-    } else if (nature.name === "quiet") {
-      reason = `Maximizes Sp. Atk without caring about Speed — Quiet drops the unused Speed stat.`;
-    } else {
-      reason = `Boosts ${STAT_DISPLAY[nature.increased]} and drops ${STAT_DISPLAY[nature.decreased]}.`;
+  function push(natureName: string, reason: string) {
+    const nature = NATURES.find((n) => n.displayName === natureName);
+    if (nature && !candidates.some((c) => c.nature.id === nature.id)) {
+      candidates.push({ nature, reason });
     }
-    recs.push({ nature, reason });
   }
 
-  // 1. Speed nature only if genuinely fast.
-  if (isFast) {
-    selected.add(order[0].name);
-    addReason(order[0]);
+  if (highest && lowest) {
+    // 找到对应的性格：提升 highest.name，降低 lowest.name
+    const best = NATURES.find(
+      (n) =>
+        !isNeutral(n) &&
+        n.increased === highest.name &&
+        n.decreased === lowest.name,
+    );
+    if (best) {
+      candidates.push({
+        nature: best,
+        reason: `Optimal for ${STAT_DISPLAY[highest.name]} while dropping ${STAT_DISPLAY[lowest.name]}, which is already this Pokemon's lowest base stat.`,
+      });
+    }
   }
 
-  // 2. Main damage nature.
-  selected.add(order[1].name);
-  addReason(order[1]);
+  // 通用物攻/特攻推荐
+  const attackStat = battleStats.find((s) => s.name === "attack");
+  const spAtkStat = battleStats.find((s) => s.name === "special-attack");
+  const speedStat = battleStats.find((s) => s.name === "speed");
 
-  // 3. Bulk nature if relevant.
-  const bulkStat = isPhysical ? s.defense : s["sp-def"];
-  if (bulkStat >= 100) {
-    selected.add(order[2].name);
-    addReason(order[2]);
+  if (attackStat && spAtkStat) {
+    if (attackStat.baseStat >= spAtkStat.baseStat + 15) {
+      push(
+        "Adamant",
+        `High Attack (${attackStat.baseStat}) and lower Special Attack make Adamant a strong physical attacker nature.`,
+      );
+      push(
+        "Jolly",
+        `Good Attack and Speed (${speedStat?.baseStat ?? "?"}) — Jolly is ideal for fast physical sweepers.`,
+      );
+    } else if (spAtkStat.baseStat >= attackStat.baseStat + 15) {
+      push(
+        "Modest",
+        `High Special Attack (${spAtkStat.baseStat}) and lower Attack make Modest ideal for special attackers.`,
+      );
+      push(
+        "Timid",
+        `Good Special Attack and Speed (${speedStat?.baseStat ?? "?"}) — Timid is great for fast special sweepers.`,
+      );
+    }
   }
 
-  // 4. Fill to 3 with remaining candidates.
-  for (const nature of order) {
-    if (recs.length >= 3) break;
-    if (selected.has(nature.name)) continue;
-    selected.add(nature.name);
-    addReason(nature);
+  // 防御型推荐
+  const defenseStat = battleStats.find((s) => s.name === "defense");
+  const spDefStat = battleStats.find((s) => s.name === "special-defense");
+  if (defenseStat && spDefStat) {
+    if (defenseStat.baseStat >= spDefStat.baseStat + 15) {
+      push(
+        "Impish",
+        `High Defense (${defenseStat.baseStat}) — Impish boosts physical bulk while dropping less-used Special Attack.`,
+      );
+    } else if (spDefStat.baseStat >= defenseStat.baseStat + 15) {
+      push(
+        "Careful",
+        `High Special Defense (${spDefStat.baseStat}) — Careful boosts special bulk while dropping Special Attack.`,
+      );
+    }
   }
 
-  return recs;
+  // 兜底：如果太少，补一个勇敢/冷静（低速高攻）
+  if (candidates.length < 3 && speedStat && speedStat.baseStat < 60) {
+    if (attackStat && attackStat.baseStat >= (spAtkStat?.baseStat ?? 0)) {
+      push(
+        "Brave",
+        `Low Speed (${speedStat.baseStat}) and high Attack — Brave is a good Trick Room physical attacker nature.`,
+      );
+    } else {
+      push(
+        "Quiet",
+        `Low Speed (${speedStat.baseStat}) and high Special Attack — Quiet works well under Trick Room.`,
+      );
+    }
+  }
+
+  return candidates.slice(0, 3);
 }

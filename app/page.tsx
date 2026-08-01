@@ -72,9 +72,9 @@ const FAQ_ITEMS: { q: string; a: string }[] = [
     a: 'Yes. The page is fully responsive and touch-friendly, so you can generate random Pokémon on any phone or tablet.',
   },
   {
-    q: 'Does the random Pokemon picker include shiny Pokémon?',
-    a: 'Yes. Turn on the Shiny filter and every generated Pokémon will use its shiny sprite.',
-  },
+      q: 'Does the random Pokemon picker include shiny Pokémon?',
+      a: 'Yes. Open Advanced filters and choose a Shiny mode: 1/4096 (full odds), 1/512 (Masuda), 1/100 (boosted), or Always for guaranteed shiny sprites.',
+    },
   {
     q: 'Can I pick more than one Pokémon at a time?',
     a: 'Yes. Use the Count filter to generate 1, 3 or 6 Pokémon in a single click.',
@@ -102,6 +102,10 @@ export default async function Home() {
       legendary: 'any' as const,
       shiny: 'off' as const,
       starter: 'off' as const,
+      mythical: 'off' as const,
+      region: 'all' as const,
+      form: 'all' as const,
+      evolutionStage: 'all' as const,
       count: 6 as 1 | 3 | 6,
     };
     const pokemons = await getRandomPokemon(dataFilter, 6);

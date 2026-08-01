@@ -11,15 +11,16 @@ import type {
 /* -------------------------------------------------------------------------- */
 
 const mockList: PokemonListItem[] = [
-  { id: 1, name: 'bulbasaur', types: ['grass', 'poison'], generation: 1 }, // starter
-  { id: 4, name: 'charmander', types: ['fire'], generation: 1 }, // starter
-  { id: 7, name: 'squirtle', types: ['water'], generation: 1 }, // starter
-  { id: 25, name: 'pikachu', types: ['electric'], generation: 1 },
-  { id: 144, name: 'articuno', types: ['ice', 'flying'], generation: 1 }, // legendary
-  { id: 150, name: 'mewtwo', types: ['psychic'], generation: 1 }, // legendary
-  { id: 152, name: 'chikorita', types: ['grass'], generation: 2 }, // starter
-  { id: 255, name: 'torchic', types: ['fire'], generation: 3 }, // starter
-  { id: 906, name: 'sprigatito', types: ['grass'], generation: 9 }, // starter
+  { id: 1, name: 'bulbasaur', types: ['grass', 'poison'], generation: 1, region: 'kanto', isMythical: false, evolutionStage: 0, formCategories: ['default'] }, // starter
+  { id: 4, name: 'charmander', types: ['fire'], generation: 1, region: 'kanto', isMythical: false, evolutionStage: 0, formCategories: ['default'] }, // starter
+  { id: 7, name: 'squirtle', types: ['water'], generation: 1, region: 'kanto', isMythical: false, evolutionStage: 0, formCategories: ['default'] }, // starter
+  { id: 25, name: 'pikachu', types: ['electric'], generation: 1, region: 'kanto', isMythical: false, evolutionStage: 1, formCategories: ['default'] },
+  { id: 144, name: 'articuno', types: ['ice', 'flying'], generation: 1, region: 'kanto', isMythical: false, evolutionStage: 0, formCategories: ['default'] }, // legendary
+  { id: 150, name: 'mewtwo', types: ['psychic'], generation: 1, region: 'kanto', isMythical: false, evolutionStage: 0, formCategories: ['default'] }, // legendary
+  { id: 151, name: 'mew', types: ['psychic'], generation: 1, region: 'kanto', isMythical: true, evolutionStage: 0, formCategories: ['default'] }, // mythical
+  { id: 152, name: 'chikorita', types: ['grass'], generation: 2, region: 'johto', isMythical: false, evolutionStage: 0, formCategories: ['default'] }, // starter
+  { id: 255, name: 'torchic', types: ['fire'], generation: 3, region: 'hoenn', isMythical: false, evolutionStage: 0, formCategories: ['default'] }, // starter
+  { id: 906, name: 'sprigatito', types: ['grass'], generation: 9, region: 'paldea', isMythical: false, evolutionStage: 0, formCategories: ['default'] }, // starter
 ]
 
 const allFilter: FilterOptions = {
@@ -28,6 +29,10 @@ const allFilter: FilterOptions = {
   legendary: 'any',
   shiny: 'off',
   starter: 'off',
+  mythical: 'off',
+  region: 'all',
+  form: 'all',
+  evolutionStage: 'all',
   count: 1,
 }
 
@@ -44,7 +49,7 @@ describe('filterList', () => {
     it('generation=1 只返回 Gen 1', () => {
       const result = filterList(mockList, { ...allFilter, generation: 1 })
       expect(result.every((r) => r.generation === 1)).toBe(true)
-      expect(result).toHaveLength(6) // bulbasaur..mewtwo
+      expect(result).toHaveLength(7) // bulbasaur..mew
     })
 
     it('generation=2 只返回 Gen 2', () => {
@@ -140,6 +145,50 @@ describe('filterList', () => {
         starter: 'on',
       })
       expect(result.map((r) => r.id).sort((a, b) => a - b)).toEqual([1, 4, 7])
+    })
+  })
+
+  describe('mythical filter', () => {
+    it('mythical=on 只返回幻之宝可梦', () => {
+      const result = filterList(mockList, { ...allFilter, mythical: 'on' })
+      expect(result.map((r) => r.id)).toEqual([151])
+    })
+
+    it('mythical=off 返回全部', () => {
+      const result = filterList(mockList, { ...allFilter, mythical: 'off' })
+      expect(result).toHaveLength(mockList.length)
+    })
+  })
+
+  describe('region filter', () => {
+    it('region=kanto 只返回关都地区', () => {
+      const result = filterList(mockList, { ...allFilter, region: 'kanto' })
+      expect(result.every((r) => r.region === 'kanto')).toBe(true)
+      expect(result).toHaveLength(7)
+    })
+
+    it('region=paldea 只返回帕底亚地区', () => {
+      const result = filterList(mockList, { ...allFilter, region: 'paldea' })
+      expect(result.map((r) => r.id)).toEqual([906])
+    })
+  })
+
+  describe('evolution stage filter', () => {
+    it('evolutionStage=unevolved 返回未进化', () => {
+      const result = filterList(mockList, { ...allFilter, evolutionStage: 'unevolved' })
+      expect(result.map((r) => r.id).sort((a, b) => a - b)).toEqual([1, 4, 7, 144, 150, 151, 152, 255, 906])
+    })
+
+    it('evolutionStage=evolved-once 返回一阶进化', () => {
+      const result = filterList(mockList, { ...allFilter, evolutionStage: 'evolved-once' })
+      expect(result.map((r) => r.id)).toEqual([25])
+    })
+  })
+
+  describe('form filter', () => {
+    it('form=default 返回所有默认形态', () => {
+      const result = filterList(mockList, { ...allFilter, form: 'default' })
+      expect(result).toHaveLength(mockList.length)
     })
   })
 })

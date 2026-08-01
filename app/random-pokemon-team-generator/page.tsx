@@ -51,9 +51,9 @@ const TEAM_FAQ_ITEMS: { q: string; a: string }[] = [
     a: 'Yes. Click the Share button on any Pokémon card to download a shareable image with the Pokémon art, type and Pokédex number.',
   },
   {
-    q: 'Can I generate a shiny team?',
-    a: 'Yes. Turn on the Shiny filter and every Pokémon on your generated team will use its shiny sprite.',
-  },
+      q: 'Can I generate a shiny team?',
+      a: 'Yes. Open Advanced filters and choose a Shiny mode: 1/4096 (full odds), 1/512 (Masuda), 1/100 (boosted), or Always to guarantee a full shiny team.',
+    },
   {
     q: 'Can I generate a type-themed team?',
     a: 'Yes. Use the Type filter to build a team of only Fire, Water, Grass, or any other type — great for monotype challenge runs.',
@@ -99,6 +99,10 @@ export default async function TeamGeneratorPage() {
       legendary: 'any' as const,
       shiny: 'off' as const,
       starter: 'off' as const,
+      mythical: 'off' as const,
+      region: 'all' as const,
+      form: 'all' as const,
+      evolutionStage: 'all' as const,
       count: 6 as 1 | 3 | 6,
     };
     const pokemons = await getRandomPokemon(dataFilter, 6);
@@ -250,7 +254,12 @@ export default async function TeamGeneratorPage() {
                 Pokemon natures chart
               </Link>{' '}
               to find the best nature for each team member and give them the
-              right stat boosts for their role.
+              right stat boosts for their role. You can also review the{' '}
+              <Link href="/pokemon-type-chart" className="text-brand underline">
+                Pokemon type chart
+              </Link>{' '}
+              to understand your team&rsquo;s defensive weaknesses and offensive
+              coverage.
             </p>
           </>
         }

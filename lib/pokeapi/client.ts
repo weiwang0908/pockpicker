@@ -8,6 +8,7 @@
 import { POKEAPI_BASE, cachedFetch } from "./cache";
 import {
   LEGENDARY_ID_SET,
+  MYTHICAL_ID_SET,
   STARTER_ID_SET,
   TYPE_MAP,
   fetchAllPokemonList,
@@ -331,8 +332,8 @@ export async function fetchGeneration(
 /**
  * 在最小信息列表上应用 FilterOptions，返回筛选后的 PokemonListItem 数组。
  *
- * 注意：legendary / starter 标记基于本仓库预计算的 id 集合（含 sub-legendary +
- * mythical + Gen 7 ultra beasts），等价于 PokeAPI is_legendary || is_mythical。
+ * 注意：legendary / mythical / starter 标记基于本仓库预计算的 id 集合。
+ * legendary 对应 PokeAPI is_legendary，mythical 对应 PokeAPI is_mythical，两者已分开。
  */
 export function filterList(
   list: PokemonListItem[],
@@ -351,12 +352,36 @@ export function filterList(
     if (filter.legendary === "only" && !LEGENDARY_ID_SET.has(item.id)) {
       return false;
     }
-    if (filter.legendary === "include") {
-      // include = 包含（即不排除），不做任何额外筛选
-      // 与 "any" 行为相同，保留分支以备未来 "exclude" 语义
+    if (filter.mythical === "on" && !MYTHICAL_ID_SET.has(item.id)) {
+      return false;
+    }
+    if (filter.region !== "all" && item.region !== filter.region) {
+      return false;
+    }
+    if (filter.form !== "all" && !item.formCategories.includes(filter.form)) {
+      return false;
+    }
+    if (
+      filter.evolutionStage !== "all" &&
+      item.evolutionStage !== evolutionStageToNumber(filter.evolutionStage)
+    ) {
+      return false;
     }
     return true;
   });
+}
+
+function evolutionStageToNumber(stage: FilterOptions["evolutionStage"]): number {
+  switch (stage) {
+    case "unevolved":
+      return 0;
+    case "evolved-once":
+      return 1;
+    case "evolved-twice":
+      return 2;
+    default:
+      return -1;
+  }
 }
 
 /**

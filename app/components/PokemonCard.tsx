@@ -10,6 +10,7 @@ import {
   Pokemon,
 } from "@/app/lib/type-data";
 import { ShareButton } from "./ShareButton";
+import { FavoriteButton } from "./FavoriteButton";
 
 export interface PokemonCardProps {
   pokemon: Pokemon;
@@ -112,12 +113,13 @@ export function PokemonCard({
             {isTeamMode ? <span className="ml-1 text-zinc-300">· Team</span> : null}
           </div>
 
-          {/* Share button — persistent, small, not visually prominent */}
+          {/* Share + Favorite buttons — persistent, small */}
           <div
-            className="mt-2 flex justify-start"
+            className="mt-2 flex items-center justify-start gap-1"
             onClick={(e) => e.stopPropagation()}
           >
             <ShareButton pokemon={pokemon} />
+            <FavoriteButton pokemon={pokemon} />
           </div>
         </div>
       </article>

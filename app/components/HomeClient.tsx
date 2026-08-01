@@ -52,12 +52,34 @@ export default function HomeClient({
   // 折叠 Filters 面板，让首屏聚焦在结果上，避免 Filter 区块占据过多视口
   const [filtersOpen, setFiltersOpen] = useState(false);
 
+  // Previous / Next 历史导航：保存每次生成的结果快照
+  const [history, setHistory] = useState<CardPokemon[][]>([initialResults]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const canGoBack = historyIndex > 0;
+  const canGoForward = historyIndex < history.length - 1;
+
   const resultRef = useRef<HTMLDivElement>(null);
   const scrollPendingRef = useRef(false);
   const reqIdRef = useRef(0);
+  const historyIndexRef = useRef(historyIndex);
+
+  // 同步 historyIndex 到 ref，供 pushHistory 的 functional update 读取
+  useEffect(() => {
+    historyIndexRef.current = historyIndex;
+  }, [historyIndex]);
 
   // teamMode is derived from count, not separate state
   const isTeamMode = filter.count >= 3;
+
+  // 推入新的历史快照，并自动截断当前指针之后的分支
+  const pushHistory = useCallback((next: CardPokemon[]) => {
+    setHistory((prev) => {
+      const trimmed = prev.slice(0, historyIndexRef.current + 1);
+      const nextHistory = [...trimmed, next].slice(-50); // 限制 50 条避免无限增长
+      return nextHistory;
+    });
+    setHistoryIndex((prev) => Math.min(prev + 1, 49));
+  }, []);
 
   // 调用 Server Action（服务端缓存生效），不再直接在浏览器里 fetch PokeAPI
   const runGenerate = useCallback(
@@ -71,13 +93,14 @@ export default function HomeClient({
         setHasPicked(true);
         setResults(r);
         setResultKey((k) => k + 1);
+        pushHistory(r);
       } catch {
         /* keep previous results on error */
       } finally {
         if (id === reqIdRef.current) setIsGenerating(false);
       }
     },
-    [],
+    [pushHistory],
   );
 
   // Smooth-scroll to the result section after a CTA-triggered render.
@@ -96,7 +119,7 @@ export default function HomeClient({
       generation: filter.generation ?? 'all',
       type: filter.type ?? 'all',
       legendary: filter.legendary,
-      shiny: filter.shiny,
+      shiny: filter.shiny ?? 'off',
       starter: filter.starter,
     });
     void runGenerate(filter, { scroll: true });
@@ -105,6 +128,24 @@ export default function HomeClient({
   const handleReroll = () => {
     trackEvent('reroll', { count: filter.count });
     void runGenerate(filter, { scroll: false });
+  };
+
+  const handlePrevious = () => {
+    if (!canGoBack) return;
+    const nextIndex = historyIndex - 1;
+    setHistoryIndex(nextIndex);
+    setResults(history[nextIndex]);
+    setResultKey((k) => k + 1);
+    trackEvent('history_previous', { index: nextIndex });
+  };
+
+  const handleNext = () => {
+    if (!canGoForward) return;
+    const nextIndex = historyIndex + 1;
+    setHistoryIndex(nextIndex);
+    setResults(history[nextIndex]);
+    setResultKey((k) => k + 1);
+    trackEvent('history_next', { index: nextIndex });
   };
 
   const handleFilterChange = (next: FilterOptions) => {
@@ -211,15 +252,38 @@ export default function HomeClient({
           </p>
         )}
         {results.length > 0 && (
-          <div className="mt-8 flex justify-center">
-            <button
-              type="button"
-              onClick={handleReroll}
-              disabled={isGenerating}
-              className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-surface px-6 py-2.5 text-sm font-semibold text-foreground transition-colors hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isGenerating ? 'Rerolling…' : '🔄 Re-roll'}
-            </button>
+          <div className="mt-8 flex flex-col items-center gap-3">
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={handlePrevious}
+                disabled={!canGoBack || isGenerating}
+                aria-label="Previous result"
+                className="inline-flex h-11 items-center gap-1.5 rounded-full border border-zinc-200 bg-surface px-5 text-sm font-semibold text-foreground transition-colors hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                ← Previous
+              </button>
+              <button
+                type="button"
+                onClick={handleReroll}
+                disabled={isGenerating}
+                className="inline-flex h-11 items-center gap-2 rounded-full border border-zinc-200 bg-surface px-6 text-sm font-semibold text-foreground transition-colors hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isGenerating ? 'Rerolling…' : '🔄 Re-roll'}
+              </button>
+              <button
+                type="button"
+                onClick={handleNext}
+                disabled={!canGoForward || isGenerating}
+                aria-label="Next result"
+                className="inline-flex h-11 items-center gap-1.5 rounded-full border border-zinc-200 bg-surface px-5 text-sm font-semibold text-foreground transition-colors hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Next →
+              </button>
+            </div>
+            <span className="text-xs text-muted">
+              {historyIndex + 1} / {history.length}
+            </span>
           </div>
         )}
       </section>
@@ -233,7 +297,7 @@ export default function HomeClient({
             <h2 className="mb-8 text-center text-2xl font-bold tracking-tight text-foreground">
               Popular Tools
             </h2>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <ToolCard
                 href="/random-pokemon-team-generator"
                 title="Random Pokemon Team Generator"
@@ -243,12 +307,32 @@ export default function HomeClient({
                 title="Pokemon Team Builder"
               />
               <ToolCard
+                href="/pokemon-type-chart"
+                title="Pokemon Type Chart"
+              />
+              <ToolCard
+                href="/pokemon-iv-calculator"
+                title="Pokemon IV Calculator"
+              />
+              <ToolCard
                 href="/pokemon-natures"
                 title="Pokemon Natures Guide"
               />
               <ToolCard
                 href="/pokemon-nickname-generator"
                 title="Pokemon Nickname Generator"
+              />
+              <ToolCard
+                href="/games/pokemon-fusion"
+                title="Pokemon Fusion"
+              />
+              <ToolCard
+                href="/games/whos-that-pokemon"
+                title="Who's That Pokémon?"
+              />
+              <ToolCard
+                href="/favorites"
+                title="Your Favorites"
               />
             </div>
           </div>
@@ -316,7 +400,11 @@ export default function HomeClient({
               layer, so there&rsquo;s no spinner on the first pick. Each result card
               shows the Pokémon&rsquo;s name, type, Pokédex number, generation, height,
               weight, abilities and type weaknesses — everything you need to decide
-              whether to keep or re-roll.
+              whether to keep or re-roll. Want to dive deeper into type matchups?{' '}
+              <Link href="/pokemon-type-chart" className="text-brand underline">
+                See the full Pokemon type chart
+              </Link>
+              .
             </p>
 
             <h2 className="mt-12 text-2xl font-bold tracking-tight text-foreground">
@@ -427,8 +515,29 @@ export default function HomeClient({
             <Link href="/random-pokemon-team-generator" className="transition-colors hover:text-brand">
               Team Generator
             </Link>
+            <Link href="/pokemon-team-builder" className="transition-colors hover:text-brand">
+              Team Builder
+            </Link>
+            <Link href="/pokemon-type-chart" className="transition-colors hover:text-brand">
+              Type Chart
+            </Link>
             <Link href="/pokemon-natures" className="transition-colors hover:text-brand">
               Pokemon Natures
+            </Link>
+            <Link href="/pokemon-nickname-generator" className="transition-colors hover:text-brand">
+              Nickname Generator
+            </Link>
+            <Link href="/pokemon-iv-calculator" className="transition-colors hover:text-brand">
+              IV Calculator
+            </Link>
+            <Link href="/games/pokemon-fusion" className="transition-colors hover:text-brand">
+              Fusion
+            </Link>
+            <Link href="/games/whos-that-pokemon" className="transition-colors hover:text-brand">
+              Who&rsquo;s That Pokémon
+            </Link>
+            <Link href="/favorites" className="transition-colors hover:text-brand">
+              Favorites
             </Link>
             <Link href="/about" className="transition-colors hover:text-brand">
               About

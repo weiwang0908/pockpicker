@@ -166,6 +166,27 @@ export default async function PokemonNicknameGeneratorPage() {
         </p>
       </section>
 
+      {/* Cross-link to related tools */}
+      <section className="mx-auto w-full max-w-3xl px-6 pb-8">
+        <h2 className="text-2xl font-bold text-foreground">Related tools</h2>
+        <p className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+          Once you&rsquo;ve found the perfect nickname, build a team around your
+          Pokémon with our{' '}
+          <Link href="/pokemon-team-builder" className="text-brand underline">
+            Pokemon team builder
+          </Link>
+          , check type matchups on the{' '}
+          <Link href="/pokemon-type-chart" className="text-brand underline">
+            Pokemon type chart
+          </Link>
+          , or find the best nature for any species with our{' '}
+          <Link href="/pokemon-natures" className="text-brand underline">
+            Pokemon natures chart
+          </Link>
+          .
+        </p>
+      </section>
+
       {/* SEO: FAQ */}
       <section className="mx-auto w-full max-w-3xl px-6 pb-16">
         <h2 className="text-2xl font-bold text-foreground">
@@ -185,6 +206,27 @@ export default async function PokemonNicknameGeneratorPage() {
           <span>&copy; 2026 PokePicker</span>
           <Link href="/" className="transition-colors hover:text-brand">
             Home
+          </Link>
+          <Link href="/random-pokemon-team-generator" className="transition-colors hover:text-brand">
+            Team Generator
+          </Link>
+          <Link href="/pokemon-team-builder" className="transition-colors hover:text-brand">
+            Team Builder
+          </Link>
+          <Link href="/pokemon-type-chart" className="transition-colors hover:text-brand">
+            Type Chart
+          </Link>
+          <Link href="/pokemon-natures" className="transition-colors hover:text-brand">
+            Natures Chart
+          </Link>
+          <Link href="/about" className="transition-colors hover:text-brand">
+            About
+          </Link>
+          <Link href="/privacy" className="transition-colors hover:text-brand">
+            Privacy
+          </Link>
+          <Link href="/contact" className="transition-colors hover:text-brand">
+            Contact
           </Link>
         </div>
       </footer>

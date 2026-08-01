@@ -13,10 +13,12 @@ import {
   cachedFetch,
 } from "./cache";
 import type {
+  FormCategory,
   Generation,
   GenerationRange,
   PokemonListItem,
   PokemonType,
+  Region,
   TypeMeta,
 } from "./types";
 
@@ -65,6 +67,19 @@ export const GENERATION_RANGES: GenerationRange[] = [
   { generation: 8, startId: 810, endId: 905, region: "galar", displayNameEn: "Galar", displayNameZh: "伽勒尔" },
   { generation: 9, startId: 906, endId: 1025, region: "paldea", displayNameEn: "Paldea", displayNameZh: "帕底亚" },
 ];
+
+/** generation -> region 映射 */
+export const REGION_BY_GENERATION: Record<Generation, Region> = {
+  1: "kanto",
+  2: "johto",
+  3: "hoenn",
+  4: "sinnoh",
+  5: "unova",
+  6: "kalos",
+  7: "alola",
+  8: "galar",
+  9: "paldea",
+};
 
 /** 根据 Pokemon id 推断世代（无需 fetch species，纯 id 范围匹配） */
 export function getGenerationById(id: number): Generation | null {
@@ -119,32 +134,60 @@ export const STARTER_POKEMON_IDS: number[] = [
 export const STARTER_ID_SET: Set<number> = new Set(STARTER_POKEMON_IDS);
 
 /* -------------------------------------------------------------------------- */
-/* Legendary + Mythical Pokemon id 列表（含 sub-legendary + mythical + UB）     */
+/* Legendary Pokemon id 列表（含 sub-legendary + UB，不含 mythical）           */
 /* -------------------------------------------------------------------------- */
 
 export const LEGENDARY_POKEMON_IDS: number[] = [
-  // Gen 1: Articuno, Zapdos, Moltres, Mewtwo, Mew(mythical)
-  144, 145, 146, 150, 151,
-  // Gen 2: Raikou, Entei, Suicune, Lugia, Ho-Oh, Celebi(mythical)
-  243, 244, 245, 249, 250, 251,
-  // Gen 3: Regirock, Regice, Registeel, Latias, Latios, Kyogre, Groudon, Rayquaza, Jirachi(mythical), Deoxys(mythical)
-  377, 378, 379, 380, 381, 382, 383, 384, 385, 386,
-  // Gen 4: Uxie, Mesprit, Azelf, Dialga, Palkia, Heatran, Regigigas, Giratina, Cresselia, Phione(mythical), Manaphy(mythical), Darkrai(mythical), Shaymin(mythical), Arceus(mythical)
-  480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493,
-  // Gen 5: Victini(mythical), Cobalion, Terrakion, Virizion, Tornadus, Thundurus, Reshiram, Zekrom, Landorus, Kyurem, Keldeo(mythical), Meloetta(mythical), Genesect(mythical)
-  494, 638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649,
-  // Gen 6: Xerneas, Yveltal, Zygarde, Diancie(mythical), Hoopa(mythical), Volcanion(mythical)
-  716, 717, 718, 719, 720, 721,
-  // Gen 7: Type: Null, Silvally, Tapu Koko/Lele/Bulu/Fini, Cosmog, Cosmoem, Solgaleo, Lunala, Nihilego, Buzzwole, Pheromosa, Xurkitree, Celesteela, Kartana, Guzzlord, Necrozma, Magearna(mythical), Marshadow(mythical), Poipole, Naganadel, Stakataka, Blacephalon, Zeraora(mythical), Meltan(mythical), Melmetal(mythical)
-  772, 773, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809,
-  // Gen 8: Zacian, Zamazenta, Eternatus, Kubfu, Urshifu, Zarude(mythical), Regieleki, Regidrago, Glastrier, Spectrier, Calyrex, Enamorus(mythical)
-  888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 905,
-  // Gen 9: Wo-Chien, Chien-Pao, Ting-Lu, Chi-Yu, Koraidon, Miraidon, Terapagos(mythical), Pecharunt(mythical)
-  1001, 1002, 1003, 1004, 1007, 1008, 1024, 1025,
+  // Gen 1: Articuno, Zapdos, Moltres, Mewtwo
+  144, 145, 146, 150,
+  // Gen 2: Raikou, Entei, Suicune, Lugia, Ho-Oh
+  243, 244, 245, 249, 250,
+  // Gen 3: Regirock, Regice, Registeel, Latias, Latios, Kyogre, Groudon, Rayquaza
+  377, 378, 379, 380, 381, 382, 383, 384,
+  // Gen 4: Uxie, Mesprit, Azelf, Dialga, Palkia, Heatran, Regigigas, Giratina, Cresselia
+  480, 481, 482, 483, 484, 485, 486, 487, 488,
+  // Gen 5: Cobalion, Terrakion, Virizion, Tornadus, Thundurus, Reshiram, Zekrom, Landorus, Kyurem
+  638, 639, 640, 641, 642, 643, 644, 645, 646,
+  // Gen 6: Xerneas, Yveltal, Zygarde
+  716, 717, 718,
+  // Gen 7: Type: Null, Silvally, Tapu Koko/Lele/Bulu/Fini, Cosmog, Cosmoem, Solgaleo, Lunala, UBs, Necrozma, Poipole, Naganadel, Stakataka, Blacephalon
+  772, 773, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 803, 804, 805, 806,
+  // Gen 8: Zacian, Zamazenta, Eternatus, Kubfu, Urshifu, Regieleki, Regidrago, Glastrier, Spectrier, Calyrex
+  888, 889, 890, 891, 892, 894, 895, 896, 897, 898,
+  // Gen 9: Wo-Chien, Chien-Pao, Ting-Lu, Chi-Yu, Koraidon, Miraidon
+  1001, 1002, 1003, 1004, 1007, 1008,
 ];
 
-/** Legendary/Mythical id 快速查找集合 */
+/** Legendary id 快速查找集合 */
 export const LEGENDARY_ID_SET: Set<number> = new Set(LEGENDARY_POKEMON_IDS);
+
+/* -------------------------------------------------------------------------- */
+/* Mythical Pokemon id 列表（幻之宝可梦，与 Legendary 分开）                    */
+/* -------------------------------------------------------------------------- */
+
+export const MYTHICAL_POKEMON_IDS: number[] = [
+  // Gen 1
+  151, // Mew
+  // Gen 2
+  251, // Celebi
+  // Gen 3
+  385, 386, // Jirachi, Deoxys
+  // Gen 4
+  489, 490, 491, 492, 493, // Phione, Manaphy, Darkrai, Shaymin, Arceus
+  // Gen 5
+  494, 647, 648, 649, // Victini, Keldeo, Meloetta, Genesect
+  // Gen 6
+  719, 720, 721, // Diancie, Hoopa, Volcanion
+  // Gen 7
+  801, 802, 807, 808, 809, // Magearna, Marshadow, Zeraora, Meltan, Melmetal
+  // Gen 8
+  893, 905, // Zarude, Enamorus
+  // Gen 9
+  1024, 1025, // Terapagos, Pecharunt
+];
+
+/** Mythical id 快速查找集合 */
+export const MYTHICAL_ID_SET: Set<number> = new Set(MYTHICAL_POKEMON_IDS);
 
 /* -------------------------------------------------------------------------- */
 /* 全量 Pokemon 最小信息列表（首次启动 fetch + 内存缓存）                       */
@@ -157,13 +200,35 @@ interface PokeApiPokemonMinimal {
   types: Array<{ slot: number; type: { name: string } }>;
 }
 
+/** PokeAPI /pokemon-species/{id} 端点的最小响应结构 */
+interface PokeApiSpeciesMinimal {
+  name: string;
+  is_mythical: boolean;
+  evolution_chain: { url: string };
+  varieties: Array<{ pokemon: { name: string; url: string } }>;
+}
+
+/** PokeAPI /evolution-chain/{id} 端点的最小响应结构 */
+interface PokeApiEvolutionChain {
+  chain: {
+    species: { name: string };
+    evolves_to: Array<{
+      species: { name: string };
+      evolves_to: Array<{
+        species: { name: string };
+      }>;
+    }>;
+  };
+}
+
 let cachedList: PokemonListItem[] | null = null;
 let inflightPromise: Promise<PokemonListItem[]> | null = null;
 
 /**
- * 拉取全量 1025 Pokemon 的最小信息列表（id + name + types + generation）。
+ * 拉取全量 1025 Pokemon 的最小信息列表（含 region / mythical / evolution / forms）。
  *
- * - 首次调用会按 50/批 从 PokeAPI fetch（约 21 批），完成后存入内存缓存
+ * - 首次调用会按 50/批 从 PokeAPI fetch pokemon + species（约 21 批 × 2），完成后存入内存缓存
+ * - evolution chain 按 URL 去重缓存，减少重复请求
  * - 后续调用直接返回内存缓存
  * - 底层每个 fetch 都被 cachedFetch 的 24h ISR 缓存，所以即使内存缓存丢失，
  *   重新 fetch 也是命中 Next.js 数据缓存的（不会真的打到 PokeAPI）
@@ -177,6 +242,7 @@ export async function fetchAllPokemonList(): Promise<PokemonListItem[]> {
 
   inflightPromise = (async () => {
     const result: PokemonListItem[] = [];
+    const evolutionChainCache = new Map<string, PokeApiEvolutionChain>();
 
     for (
       let batchStart = 1;
@@ -193,9 +259,22 @@ export async function fetchAllPokemonList(): Promise<PokemonListItem[]> {
 
       const items = await Promise.all(
         ids.map(async (id): Promise<PokemonListItem> => {
-          const pokemon = await cachedFetch<PokeApiPokemonMinimal>(
-            `${POKEAPI_BASE}/pokemon/${id}`,
+          const [pokemon, species] = await Promise.all([
+            cachedFetch<PokeApiPokemonMinimal>(`${POKEAPI_BASE}/pokemon/${id}`),
+            cachedFetch<PokeApiSpeciesMinimal>(
+              `${POKEAPI_BASE}/pokemon-species/${id}`,
+            ),
+          ]);
+
+          const generation = getGenerationById(pokemon.id) ?? 1;
+          const region = REGION_BY_GENERATION[generation];
+
+          // 计算进化阶段（基于 evolution chain 深度）
+          const evolutionStage = await getEvolutionStage(
+            species,
+            evolutionChainCache,
           );
+
           return {
             id: pokemon.id,
             name: pokemon.name,
@@ -204,7 +283,11 @@ export async function fetchAllPokemonList(): Promise<PokemonListItem[]> {
               .sort((a, b) => a.slot - b.slot)
               .map((t) => t.type.name as PokemonType)
               .filter((t) => Boolean(TYPE_MAP[t])),
-            generation: getGenerationById(pokemon.id) ?? 1,
+            generation,
+            region,
+            isMythical: species.is_mythical,
+            evolutionStage,
+            formCategories: getFormCategories(species.varieties),
           };
         }),
       );
@@ -221,6 +304,89 @@ export async function fetchAllPokemonList(): Promise<PokemonListItem[]> {
   } finally {
     inflightPromise = null;
   }
+}
+
+/**
+ * 从 species varieties 推断形态分类。
+ * 默认形态始终包含 "default"；其它形态通过名称后缀判断。
+ */
+function getFormCategories(
+  varieties: PokeApiSpeciesMinimal["varieties"],
+): FormCategory[] {
+  const categories = new Set<FormCategory>(["default"]);
+
+  for (const variety of varieties) {
+    const name = variety.pokemon.name;
+    if (name.includes("-mega")) {
+      categories.add("mega");
+    }
+    if (name.includes("-gmax")) {
+      categories.add("gigantamax");
+    }
+    if (name.includes("-alola") || name.includes("-alolan")) {
+      categories.add("alolan");
+      categories.add("regional");
+    }
+    if (name.includes("-galar") || name.includes("-galarian")) {
+      categories.add("galarian");
+      categories.add("regional");
+    }
+    if (name.includes("-hisui") || name.includes("-hisuian")) {
+      categories.add("hisuian");
+      categories.add("regional");
+    }
+    if (name.includes("-paldea") || name.includes("-paldean")) {
+      categories.add("paldean");
+      categories.add("regional");
+    }
+  }
+
+  return Array.from(categories);
+}
+
+/**
+ * 获取指定 species 的进化阶段（0/1/2）。
+ * 使用缓存避免对同一 evolution chain 重复 fetch。
+ */
+async function getEvolutionStage(
+  species: PokeApiSpeciesMinimal,
+  cache: Map<string, PokeApiEvolutionChain>,
+): Promise<0 | 1 | 2> {
+  const chainUrl = species.evolution_chain?.url;
+  if (!chainUrl) return 0;
+
+  let chain = cache.get(chainUrl);
+  if (!chain) {
+    try {
+      chain = await cachedFetch<PokeApiEvolutionChain>(chainUrl);
+      cache.set(chainUrl, chain);
+    } catch {
+      return 0;
+    }
+  }
+
+  return computeEvolutionStage(chain, species.name);
+}
+
+/**
+ * 在 evolution chain 中查找 species name 对应的深度。
+ * 0=基础形态，1=一阶进化，2=二阶进化。
+ */
+function computeEvolutionStage(
+  chain: PokeApiEvolutionChain,
+  pokemonName: string,
+): 0 | 1 | 2 {
+  const root = chain.chain;
+  if (root.species.name === pokemonName) return 0;
+
+  for (const first of root.evolves_to) {
+    if (first.species.name === pokemonName) return 1;
+    for (const second of first.evolves_to) {
+      if (second.species.name === pokemonName) return 2;
+    }
+  }
+
+  return 0;
 }
 
 /** 重置内存缓存（仅测试 / 维护用） */

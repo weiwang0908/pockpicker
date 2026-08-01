@@ -19,6 +19,46 @@ const BOOL_OPTIONS: { value: boolean; label: string }[] = [
   { value: true, label: 'On' },
 ];
 
+const SHINY_OPTIONS: { value: FilterOptions['shiny']; label: string }[] = [
+  { value: 'off', label: 'Off' },
+  { value: 'random-4096', label: '1/4096' },
+  { value: 'random-512', label: '1/512' },
+  { value: 'random-100', label: '1/100' },
+  { value: 'always', label: 'Always' },
+];
+
+const REGION_OPTIONS: { value: FilterOptions['region']; label: string }[] = [
+  { value: null, label: 'All' },
+  { value: 'kanto', label: 'Kanto' },
+  { value: 'johto', label: 'Johto' },
+  { value: 'hoenn', label: 'Hoenn' },
+  { value: 'sinnoh', label: 'Sinnoh' },
+  { value: 'unova', label: 'Unova' },
+  { value: 'kalos', label: 'Kalos' },
+  { value: 'alola', label: 'Alola' },
+  { value: 'galar', label: 'Galar' },
+  { value: 'paldea', label: 'Paldea' },
+];
+
+const FORM_OPTIONS: { value: FilterOptions['form']; label: string }[] = [
+  { value: null, label: 'All' },
+  { value: 'default', label: 'Default' },
+  { value: 'mega', label: 'Mega' },
+  { value: 'gigantamax', label: 'Gigantamax' },
+  { value: 'regional', label: 'Regional' },
+  { value: 'alolan', label: 'Alolan' },
+  { value: 'galarian', label: 'Galarian' },
+  { value: 'hisuian', label: 'Hisuian' },
+  { value: 'paldean', label: 'Paldean' },
+];
+
+const EVOLUTION_OPTIONS: { value: FilterOptions['evolutionStage']; label: string }[] = [
+  { value: null, label: 'All' },
+  { value: 'unevolved', label: 'Unevolved' },
+  { value: 'evolved-once', label: 'Evolved Once' },
+  { value: 'evolved-twice', label: 'Evolved Twice' },
+];
+
 export default function AdvancedFilters({
   filter,
   onChange,
@@ -55,9 +95,16 @@ export default function AdvancedFilters({
               onChange={(v) => update('legendary', v)}
             />
           </Row>
-          <Row label="Shiny">
+          <Row label="Mythical">
             <Segmented
               options={BOOL_OPTIONS}
+              value={filter.mythical}
+              onChange={(v) => update('mythical', v)}
+            />
+          </Row>
+          <Row label="Shiny">
+            <Segmented
+              options={SHINY_OPTIONS}
               value={filter.shiny}
               onChange={(v) => update('shiny', v)}
             />
@@ -67,6 +114,27 @@ export default function AdvancedFilters({
               options={BOOL_OPTIONS}
               value={filter.starter}
               onChange={(v) => update('starter', v)}
+            />
+          </Row>
+          <Row label="Region">
+            <Segmented
+              options={REGION_OPTIONS}
+              value={filter.region}
+              onChange={(v) => update('region', v)}
+            />
+          </Row>
+          <Row label="Evolution">
+            <Segmented
+              options={EVOLUTION_OPTIONS}
+              value={filter.evolutionStage}
+              onChange={(v) => update('evolutionStage', v)}
+            />
+          </Row>
+          <Row label="Forms">
+            <Segmented
+              options={FORM_OPTIONS}
+              value={filter.form}
+              onChange={(v) => update('form', v)}
             />
           </Row>
         </div>
@@ -92,7 +160,7 @@ interface SegmentedProps<T> {
   onChange: (value: T) => void;
 }
 
-function Segmented<T extends string | number | boolean>({
+function Segmented<T extends string | number | boolean | null>({
   options,
   value,
   onChange,

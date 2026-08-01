@@ -53,7 +53,7 @@ const defaultUIFilter: UIFilterOptions = {
   generation: null,
   type: null,
   legendary: 'any',
-  shiny: false,
+  shiny: 'off',
   starter: false,
   count: 6,
 }
@@ -104,7 +104,7 @@ describe('generateRandomAction', () => {
       ...defaultUIFilter,
       generation: 1,
       type: 'Fire',
-      shiny: true,
+      shiny: 'always',
       starter: true,
     })
 
@@ -112,7 +112,7 @@ describe('generateRandomAction', () => {
       expect.objectContaining({
         generation: 1,
         type: 'fire',
-        shiny: 'on',
+        shiny: 'always',
         starter: 'on',
       }),
       6,
@@ -196,10 +196,10 @@ describe('generateTeamAction', () => {
     )
   })
 
-  it('uiToDataFilter: shiny false → "off"', async () => {
+  it('uiToDataFilter: shiny "off" 直接透传', async () => {
     vi.mocked(getRandomPokemon).mockResolvedValue([makeMockPokemon()])
 
-    await generateTeamAction({ ...defaultUIFilter, shiny: false })
+    await generateTeamAction({ ...defaultUIFilter, shiny: 'off' })
 
     expect(getRandomPokemon).toHaveBeenCalledWith(
       expect.objectContaining({ shiny: 'off' }),
@@ -207,13 +207,24 @@ describe('generateTeamAction', () => {
     )
   })
 
-  it('uiToDataFilter: shiny true → "on"', async () => {
+  it('uiToDataFilter: shiny "always" 直接透传', async () => {
     vi.mocked(getRandomPokemon).mockResolvedValue([makeMockPokemon()])
 
-    await generateTeamAction({ ...defaultUIFilter, shiny: true })
+    await generateTeamAction({ ...defaultUIFilter, shiny: 'always' })
 
     expect(getRandomPokemon).toHaveBeenCalledWith(
-      expect.objectContaining({ shiny: 'on' }),
+      expect.objectContaining({ shiny: 'always' }),
+      6,
+    )
+  })
+
+  it('uiToDataFilter: shiny 概率模式直接透传', async () => {
+    vi.mocked(getRandomPokemon).mockResolvedValue([makeMockPokemon()])
+
+    await generateTeamAction({ ...defaultUIFilter, shiny: 'random-100' })
+
+    expect(getRandomPokemon).toHaveBeenCalledWith(
+      expect.objectContaining({ shiny: 'random-100' }),
       6,
     )
   })
@@ -261,16 +272,16 @@ describe('generateTeamAction', () => {
     const mock = makeMockPokemon()
     vi.mocked(getRandomPokemon).mockResolvedValue([mock])
 
-    const [card] = await generateTeamAction({ ...defaultUIFilter, shiny: false })
+    const [card] = await generateTeamAction({ ...defaultUIFilter, shiny: 'off' })
 
     expect(card.sprite).toBe('https://example.com/artwork.png') // officialArtwork
   })
 
-  it('toCardPokemon: sprite 从 sprites 提取（shiny）', async () => {
+  it('toCardPokemon: sprite 从 sprites 提取（shiny always）', async () => {
     const mock = makeMockPokemon()
     vi.mocked(getRandomPokemon).mockResolvedValue([mock])
 
-    const [card] = await generateTeamAction({ ...defaultUIFilter, shiny: true })
+    const [card] = await generateTeamAction({ ...defaultUIFilter, shiny: 'always' })
 
     expect(card.sprite).toBe('https://example.com/artwork-shiny.png') // officialArtworkShiny
   })

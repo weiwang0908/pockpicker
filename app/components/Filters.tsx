@@ -6,12 +6,23 @@ import TypeFilter from './TypeFilter';
 import CountFilter from './CountFilter';
 import AdvancedFilters from './AdvancedFilters';
 
+export type ShinyMode =
+  | 'off'
+  | 'random-4096'
+  | 'random-512'
+  | 'random-100'
+  | 'always';
+
 export interface FilterOptions {
   generation: number | null; // null = All
   type: string | null; // null = All
   legendary: 'any' | 'include' | 'only';
-  shiny: boolean;
+  shiny: ShinyMode;
   starter: boolean;
+  mythical: boolean;
+  region: string | null; // null = All
+  form: string | null; // null = All
+  evolutionStage: string | null; // null = All
   count: 1 | 3 | 6;
 }
 
@@ -19,8 +30,12 @@ export const defaultFilter: FilterOptions = {
   generation: null,
   type: null,
   legendary: 'any',
-  shiny: false,
+  shiny: 'off',
   starter: false,
+  mythical: false,
+  region: null,
+  form: null,
+  evolutionStage: null,
   count: 6,
 };
 

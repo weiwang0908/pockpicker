@@ -266,7 +266,7 @@ export default async function PokemonNaturesPage() {
         </ul>
       </section>
 
-      {/* Cross-link to Team Generator */}
+      {/* Cross-link to related tools */}
       <section className="mx-auto w-full max-w-3xl px-6 pb-8">
         <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
           Once you&rsquo;ve picked the right nature, why not put it to the test?
@@ -275,6 +275,15 @@ export default async function PokemonNaturesPage() {
             random Pokemon team generator
           </Link>{' '}
           to roll a full squad and see how your nature choices play out in battle.
+          For competitive planning, pair this with our{' '}
+          <Link href="/pokemon-type-chart" className="text-brand underline">
+            Pokemon type chart
+          </Link>{' '}
+          and{' '}
+          <Link href="/pokemon-team-builder" className="text-brand underline">
+            Pokemon team builder
+          </Link>
+          .
         </p>
       </section>
 
