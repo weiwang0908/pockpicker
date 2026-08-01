@@ -38,7 +38,7 @@ const WEB_APP_JSON_LD = {
   applicationCategory: "UtilityApplication",
   operatingSystem: "Any",
   description:
-    "Every Pokemon nature explained. See the full Pokemon natures chart with all 25 natures, which stat each one raises and lowers, and get the best nature recommendation for any Pokemon.",
+    "Interactive Pokemon nature chart showing all 25 natures, their +10% / -10% stat effects, and best nature recommendations for any Pokemon. Free, no signup.",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
 };
 
@@ -69,16 +69,16 @@ const ITEM_LIST_JSON_LD = {
 export const metadata: Metadata = {
   title: {
     absolute:
-      "Pokemon Natures Chart: Full List & Best Nature Guide (2025) | PokePicker",
+      "Pokemon Natures Chart: All 25 Natures Explained | PokePicker",
   },
   description:
-    "Complete Pokemon natures chart with all 25 natures. See which stat each nature raises and lowers, find the best nature for any Pokemon, and get a free recommendation. No signup.",
+    "Interactive Pokemon nature chart showing all 25 natures, their +10% / -10% stat effects, and best nature recommendations for any Pokemon. Free, no signup.",
   alternates: { canonical: "/pokemon-natures" },
   openGraph: {
     title:
-      "Pokemon Natures Chart: Full List & Best Nature Guide (2025) | PokePicker",
+      "Pokemon Natures Chart: All 25 Natures Explained | PokePicker",
     description:
-      "Complete Pokemon natures chart with all 25 natures. See which stat each nature raises and lowers, find the best nature for any Pokemon, and get a free recommendation. No signup.",
+      "Interactive Pokemon nature chart showing all 25 natures, their +10% / -10% stat effects, and best nature recommendations for any Pokemon. Free, no signup.",
   },
 };
 

@@ -13,20 +13,20 @@ import type { Pokemon as CardPokemon } from '@/app/lib/type-data';
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: 'Random Pokemon Picker & Generator | PokePicker',
+  title: 'Random Pokemon Picker — All 1025 Pokémon, One Click | PokePicker',
   description:
-    'Random Pokemon picker: pick from all 1025 species in one click. Filter by generation, type, legendary or shiny. Free, no signup.',
+    'Free random Pokemon picker with all 1025 species. Pick by generation, type, legendary or shiny in one click — no signup.',
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'Random Pokemon Picker & Generator | PokePicker',
+    title: 'Random Pokemon Picker — All 1025 Pokémon, One Click | PokePicker',
     description:
-      'Random Pokemon picker: pick from all 1025 species in one click. Filter by generation, type, legendary or shiny. Free, no signup.',
+      'Free random Pokemon picker with all 1025 species. Pick by generation, type, legendary or shiny in one click — no signup.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Random Pokemon Picker & Generator | PokePicker',
+    title: 'Random Pokemon Picker — All 1025 Pokémon, One Click | PokePicker',
     description:
-      'Random Pokemon picker: pick from all 1025 species in one click. Filter by generation, type, legendary or shiny. Free, no signup.',
+      'Free random Pokemon picker with all 1025 species. Pick by generation, type, legendary or shiny in one click — no signup.',
   },
 };
 

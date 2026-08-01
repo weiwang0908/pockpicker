@@ -36,8 +36,8 @@ interface HomeClientProps {
 export default function HomeClient({
   faqItems,
   initialResults,
-  heroTitle = 'Random Pokemon Picker & Generator',
-  heroSubtitle = 'Generate a random Pokémon from all 1025 species in one click.',
+  heroTitle = 'Random Pokemon Picker',
+  heroSubtitle = 'Pick from all 1025 Pokémon in one click. Filter by generation, type, legendary or shiny.',
   heroHint = 'Default: 6 Pokémon · Use the Count filter below to pick 1 or 3',
   seoContent,
   popularTools,
@@ -153,7 +153,7 @@ export default function HomeClient({
             onClick={() => setFiltersOpen((v) => !v)}
             aria-expanded={filtersOpen}
             aria-controls="home-filters-panel"
-            className="flex w-full items-center justify-between gap-2 px-5 py-3 text-left"
+            className="group flex w-full items-center justify-between gap-2 rounded-2xl px-5 py-3 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900"
           >
             <span className="flex items-baseline gap-2">
               <span className="text-base font-bold text-foreground sm:text-lg">
@@ -163,11 +163,14 @@ export default function HomeClient({
                 Generation · Type · Count · Legendary · Shiny
               </span>
             </span>
-            <span
-              aria-hidden="true"
-              className={`text-muted transition-transform duration-200 ${filtersOpen ? 'rotate-180' : ''}`}
-            >
-              ▾
+            <span className="flex items-center gap-1.5 text-sm font-medium text-brand">
+              <span aria-hidden="false">{filtersOpen ? 'Hide' : 'Show'}</span>
+              <span
+                aria-hidden="true"
+                className={`text-lg transition-transform duration-200 ${filtersOpen ? 'rotate-180' : ''}`}
+              >
+                ▾
+              </span>
             </span>
           </button>
           {filtersOpen && (

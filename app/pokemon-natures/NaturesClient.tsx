@@ -41,29 +41,8 @@ export default function NaturesClient({ pokemonList }: NaturesClientProps) {
         </button>
       </section>
 
-      {/* Nature Finder */}
+      {/* Nature Chart (5×5 matrix) — primary intent, placed first */}
       <section className="mt-10">
-        <h2 className="mb-4 text-lg font-bold text-foreground">
-          Nature Finder
-        </h2>
-        <NatureFinder natures={natures} />
-      </section>
-
-      {/* Inline CTA between Finder and Chart */}
-      <div className="mt-8 rounded-xl border border-brand/20 bg-brand/5 p-4 text-center">
-        <p className="text-sm text-zinc-700 dark:text-zinc-200">
-          Not sure which nature to pick?
-        </p>
-        <button
-          onClick={scrollToRecommender}
-          className="mt-1 text-sm font-semibold text-brand underline-offset-2 hover:underline"
-        >
-          Get a recommendation based on your Pokemon's stats →
-        </button>
-      </div>
-
-      {/* Nature Chart (5×5 matrix) */}
-      <section className="mt-12">
         <h2 className="mb-4 text-lg font-bold text-foreground">
           Pokemon Nature Chart
         </h2>
@@ -76,6 +55,14 @@ export default function NaturesClient({ pokemonList }: NaturesClientProps) {
           Best Nature Recommender
         </h2>
         <NatureRecommender pokemonList={pokemonList} />
+      </section>
+
+      {/* Nature Finder */}
+      <section className="mt-12">
+        <h2 className="mb-4 text-lg font-bold text-foreground">
+          Nature Finder
+        </h2>
+        <NatureFinder natures={natures} />
       </section>
     </div>
   );

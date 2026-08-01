@@ -60,16 +60,16 @@ const FAQ_JSON_LD = {
 export const metadata: Metadata = {
   title: {
     absolute:
-      "Pokemon Nickname Generator — 55+ Creative Nicknames Per Species | PokePicker",
+      "Pokemon Nickname Generator — 55+ Names Per Species | PokePicker",
   },
   description:
-    "Generate 55+ creative Pokemon nicknames per species across wordplay, mythology, cute, tough, food, nature, and real-name categories. Type-themed suggestions for any of the 1,025 Pokemon. Free, no signup.",
+    "Generate 55+ creative Pokemon nicknames per species across wordplay, mythology, cute, tough, food, nature, and real-name categories. Type-themed suggestions for any Pokemon. Free, no signup.",
   alternates: { canonical: "/pokemon-nickname-generator" },
   openGraph: {
     title:
-      "Pokemon Nickname Generator — 55+ Creative Nicknames Per Species | PokePicker",
+      "Pokemon Nickname Generator — 55+ Names Per Species | PokePicker",
     description:
-      "Generate 55+ creative Pokemon nicknames per species across wordplay, mythology, cute, tough, food, nature, and real-name categories. Type-themed suggestions for any of the 1,025 Pokemon. Free, no signup.",
+      "Generate 55+ creative Pokemon nicknames per species across wordplay, mythology, cute, tough, food, nature, and real-name categories. Type-themed suggestions for any Pokemon. Free, no signup.",
   },
 };
 

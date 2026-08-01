@@ -40,16 +40,16 @@ const FAQ_JSON_LD = {
 export const metadata: Metadata = {
   title: {
     absolute:
-      "Pokemon Team Builder — Plan Your Team & Analyze Weaknesses | PokePicker",
+      "Pokemon Team Builder — Build & Analyze Your 6-Pokémon Team | PokePicker",
   },
   description:
-    "Build your Pokemon team and instantly see type weaknesses, resistances, and coverage. Pick Pokemon manually or generate a random team. Free, no signup.",
+    "Build and analyze your Pokemon team with this free Pokemon team builder. Add up to 6 Pokemon, see type weaknesses and resistances instantly, and check your team's coverage against all 18 types. No signup.",
   alternates: { canonical: "/pokemon-team-builder" },
   openGraph: {
     title:
-      "Pokemon Team Builder — Plan Your Team & Analyze Weaknesses | PokePicker",
+      "Pokemon Team Builder — Build & Analyze Your 6-Pokémon Team | PokePicker",
     description:
-      "Build your Pokemon team and instantly see type weaknesses, resistances, and coverage. Pick Pokemon manually or generate a random team. Free, no signup.",
+      "Build and analyze your Pokemon team with this free Pokemon team builder. Add up to 6 Pokemon, see type weaknesses and resistances instantly, and check your team's coverage against all 18 types. No signup.",
   },
 };
 
