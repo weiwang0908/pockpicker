@@ -55,6 +55,10 @@ const defaultUIFilter: UIFilterOptions = {
   legendary: 'any',
   shiny: 'off',
   starter: false,
+  mythical: false,
+  region: null,
+  form: null,
+  evolutionStage: null,
   count: 6,
 }
 

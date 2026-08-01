@@ -18,8 +18,8 @@ const FILTER_CHIPS: { value: StatFilter; label: string }[] = [
   { value: "all", label: "All" },
   { value: "attack", label: "+Attack" },
   { value: "defense", label: "+Defense" },
-  { value: "sp-atk", label: "+Sp. Atk" },
-  { value: "sp-def", label: "+Sp. Def" },
+  { value: "special-attack", label: "+Sp. Atk" },
+  { value: "special-defense", label: "+Sp. Def" },
   { value: "speed", label: "+Speed" },
 ];
 

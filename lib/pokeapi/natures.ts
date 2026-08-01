@@ -47,10 +47,10 @@ export interface Nature {
   id: number;
   name: string;
   displayName: string;
-  /** 增加的属性（neutral natures 为 null） */
-  increased: BattleStat | null;
-  /** 减少的属性（neutral natures 为 null） */
-  decreased: BattleStat | null;
+  /** 增加的属性（neutral natures 时与 decreased 相同） */
+  increased: BattleStat;
+  /** 减少的属性（neutral natures 时与 increased 相同） */
+  decreased: BattleStat;
   likesFlavor: Flavor;
   hatesFlavor: Flavor;
 }
@@ -293,8 +293,8 @@ export function isNeutral(nature: Nature): boolean {
 
 export interface NatureInfo {
   name: string;
-  increased: BattleStat | null;
-  decreased: BattleStat | null;
+  increased: BattleStat;
+  decreased: BattleStat;
 }
 
 /** IV 计算器可直接遍历的 25 性格列表（不带 flavor 信息） */
@@ -312,9 +312,9 @@ export function getNatureMultiplier(
   const nature = NATURES.find(
     (n) => n.displayName.toLowerCase() === natureName.toLowerCase(),
   );
-  if (!nature) return 1;
-  if (nature.increased === stat && nature.decreased !== stat) return 1.1;
-  if (nature.decreased === stat && nature.increased !== stat) return 0.9;
+  if (!nature || isNeutral(nature)) return 1;
+  if (nature.increased === stat) return 1.1;
+  if (nature.decreased === stat) return 0.9;
   return 1;
 }
 

@@ -70,12 +70,12 @@ export function formatPokedexNumber(id: number): string {
 }
 
 // PokeAPI returns height in decimeters and weight in hectograms.
-export function formatHeight(decimeters?: number): string {
+export function formatHeight(decimeters?: number | null): string {
   if (decimeters == null) return "—";
   return `${(decimeters / 10).toFixed(1)} m`;
 }
 
-export function formatWeight(hectograms?: number): string {
+export function formatWeight(hectograms?: number | null): string {
   if (hectograms == null) return "—";
   return `${(hectograms / 10).toFixed(1)} kg`;
 }
