@@ -14,6 +14,8 @@ interface ToolEntry {
   tagline: string;
   description: string;
   category: "Game" | "Directory" | "Tool";
+  /** When true, the link is rendered dofollow (no `noreferrer`), passing full link equity. */
+  dofollow?: boolean;
 }
 
 const TOOLS: ToolEntry[] = [
@@ -24,6 +26,15 @@ const TOOLS: ToolEntry[] = [
     description:
       "A clever daily puzzle that fuses the Wordle mechanic with Pokémon guessing. Our team played it daily before building PokePicker — it's the perfect quick-break game for Pokémon fans.",
     category: "Game",
+  },
+  {
+    name: "Ethnicity Guesser",
+    url: "https://www.ethnicity-guesser.com",
+    tagline: "Daily ethnicity quiz",
+    description:
+      "A free daily ethnoguessr-style game: look at a composite face, drop a pin on the world map, and learn about 240 human phenotypes — no sign-up needed.",
+    category: "Game",
+    dofollow: true,
   },
   {
     name: "Lovable",
@@ -90,7 +101,7 @@ export default function ResourcesPage() {
                     <a
                       href={tool.url}
                       target="_blank"
-                      rel="noopener noreferrer"
+                      rel={tool.dofollow ? "noopener" : "noopener noreferrer"}
                       className="text-lg font-semibold text-zinc-900 hover:text-brand dark:text-zinc-100"
                     >
                       {tool.name}
@@ -109,7 +120,7 @@ export default function ResourcesPage() {
                 <a
                   href={tool.url}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel={tool.dofollow ? "noopener" : "noopener noreferrer"}
                   className="inline-flex min-h-[44px] shrink-0 items-center rounded-full border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:border-brand hover:text-brand dark:border-zinc-700 dark:text-zinc-300"
                   aria-label={`Visit ${tool.name}`}
                 >
