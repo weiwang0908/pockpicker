@@ -41,15 +41,22 @@ export default function PrivacyPage() {
           .
         </Section>
 
-        <Section title="Children's privacy">
+        <Section title="Children's privacy (COPPA)">
           Pokémon-themed content appeals to children, and we treat that
-          responsibility seriously. PokePicker is a general-audience site that
-          is likely to be enjoyed by children under 13 (under 16 in the EEA/UK),
-          so we operate it accordingly:
+          responsibility seriously. PokePicker is treated as{" "}
+          <strong>child-directed content</strong> under the U.S. Children&rsquo;s
+          Online Privacy Protection Act (COPPA): we consider our audience
+          likely to include children under 13 (under 16 in the EEA/UK), and we
+          operate the site accordingly:
         </Section>
         <ul className="-mt-4 list-disc gap-2 pl-5 text-sm leading-relaxed">
           <li>
-            We never ask children (or anyone) for a name, email, age, or any
+            We never knowingly collect personal information from children — no
+            names, emails, ages, or contact details are requested anywhere on
+            the site.
+          </li>
+          <li>
+            We do not ask children (or anyone) for a name, email, age, or any
             personal detail to use our tools and games.
           </li>
           <li>

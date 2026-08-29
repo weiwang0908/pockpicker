@@ -18,7 +18,7 @@ export function FavoritesClient() {
             <p className="mt-2 text-sm text-muted">
               {hydrated
                 ? `${favorites.length} saved · stored locally on your device`
-                : "Loading…"}
+                : "Your saved Pokémon will appear here — no account needed."}
             </p>
           </div>
           {hydrated && favorites.length > 0 && (
@@ -35,7 +35,12 @@ export function FavoritesClient() {
         </div>
       </section>
 
-      {hydrated && favorites.length === 0 && (
+      {/* 默认渲染空状态：首访/无 JS 用户看到引导而非 Loading；有收藏后水合替换 */}
+      {hydrated && favorites.length > 0 ? (
+        <section className="mx-auto w-full max-w-5xl px-6 pb-20">
+          <PokemonCardList pokemons={favorites} />
+        </section>
+      ) : (
         <section className="mx-auto w-full max-w-3xl px-6 pb-20 text-center">
           <p className="text-lg text-muted">
             You haven&rsquo;t saved any Pokémon yet.
@@ -49,12 +54,6 @@ export function FavoritesClient() {
           >
             Pick Random Pokémon
           </Link>
-        </section>
-      )}
-
-      {hydrated && favorites.length > 0 && (
-        <section className="mx-auto w-full max-w-5xl px-6 pb-20">
-          <PokemonCardList pokemons={favorites} />
         </section>
       )}
     </>

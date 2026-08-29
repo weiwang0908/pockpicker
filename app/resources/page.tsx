@@ -155,6 +155,42 @@ export default function ResourcesPage() {
               that we stopped needing an alternative.
             </p>
           </div>
+
+          <div>
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              Why a tool site curates at all
+            </h2>
+            <p className="mt-2">
+              PokePicker exists because most Pokémon tools are built for the
+              builder, not the visitor — feature checklists assembled without
+              asking whether a first-time user can get value in ten seconds.
+              Curation is the flip side of that philosophy: holding the tools
+              we recommend to the same bar we hold ourselves to makes this
+              page more useful than a link dump, and it keeps us honest about
+              our own product. When we test someone else&apos;s tool and find
+              ourselves annoyed by the same flaws we once shipped — a
+              cluttered filter panel, a picker that forgets your filters on
+              refresh — we note it, fix it in PokePicker, and thank the tool
+              for the free lesson. That feedback loop is the real reason this
+              page exists.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              Suggest a tool
+            </h2>
+            <p className="mt-2">
+              We review suggestions in batches, roughly once a quarter.
+              Include a link, what the tool does, and what makes it worth two
+              weeks of someone&apos;s attention — submissions that read like
+              marketing copy go to the bottom of the pile, and submissions
+              that can&apos;t survive two weeks of real use don&apos;t make
+              the list at all. We don&apos;t accept paid placements, and the
+              order of listings below reflects our own preference, not any
+              commercial arrangement.
+            </p>
+          </div>
         </div>
 
         <ul className="mt-8 space-y-6">
