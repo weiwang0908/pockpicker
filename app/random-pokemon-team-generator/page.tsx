@@ -267,7 +267,28 @@ export default async function TeamGeneratorPage() {
               >
                 Nuzlocke random team challenge guide
               </Link>
-              .
+              , follow a complete{' '}
+              <Link
+                href="/guides/random-team-nuzlocke-walkthrough"
+                className="text-brand underline"
+              >
+                gym-by-gym run walkthrough
+              </Link>
+              , take on a{' '}
+              <Link
+                href="/guides/monotype-challenge-guide"
+                className="text-brand underline"
+              >
+                monotype challenge
+              </Link>
+              , or learn how{' '}
+              <Link
+                href="/guides/shiny-hunting-odds"
+                className="text-brand underline"
+              >
+                shiny hunting odds
+              </Link>{' '}
+              work before using the shiny modes below.
             </p>
           </>
         }

@@ -168,7 +168,15 @@ export default function NuzlockeGuidePage() {
             className="text-brand underline underline-offset-2 hover:opacity-80"
           >
             Generate your random team &rarr;
-          </Link>
+          </Link>{" "}
+          Or follow a complete{" "}
+          <Link
+            href="/guides/random-team-nuzlocke-walkthrough"
+            className="text-brand underline underline-offset-2 hover:opacity-80"
+          >
+            gym-by-gym run walkthrough
+          </Link>{" "}
+          first.
         </p>
       </div>
     </StaticPageLayout>
