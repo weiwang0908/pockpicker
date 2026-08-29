@@ -41,6 +41,20 @@ const NAV: NavSection[] = [
       { href: "/games/pokemon-fusion", label: "Pokemon Fusion" },
     ],
   },
+  {
+    label: "Academy",
+    items: [
+      { href: "/academy", label: "Academy Hub" },
+      { href: "/academy/iv-ev-natures-guide", label: "IVs, EVs & Natures" },
+      { href: "/academy/best-natures-by-role", label: "Best Natures by Role" },
+      { href: "/academy/type-synergy-defensive-cores", label: "Type Synergy & Cores" },
+      { href: "/academy/understanding-base-stats", label: "Reading Base Stats" },
+      { href: "/academy/team-building-basics", label: "Team Building 101" },
+      { href: "/guides/monotype-challenge-guide", label: "Monotype Challenge" },
+      { href: "/guides/shiny-hunting-odds", label: "Shiny Odds Guide" },
+      { href: "/guides/random-team-nuzlocke-walkthrough", label: "Nuzlocke Walkthrough" },
+    ],
+  },
 ];
 
 interface DropdownContextType {
