@@ -2,16 +2,25 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteHeader } from "@/app/components/SiteHeader";
 import { WhosThatPokemonClient } from "./WhosThatPokemonClient";
+import {
+  HERO_TAGLINE,
+  HISTORY_TEXT,
+  HOW_TO_PLAY_STEPS,
+  DIFFICULTY_TIERS,
+  IDENTIFICATION_TIPS,
+  WHY_PLAY_TEXT,
+  FAQ_ITEMS,
+} from "./seo-content";
 
 export const metadata: Metadata = {
-  title: "Who's That Pokémon? — Free Guessing Game | PokePicker",
+  title: "Who's That Pokémon? — Free Guessing Game",
   description:
-    "Play the classic Who's That Pokémon guessing game for free. Identify Pokémon from their silhouettes and build your streak. No signup required.",
+    "Play the classic Who's That Pokémon guessing game for free. Identify all 1025 Pokémon from their silhouettes, build your streak, and learn shape-recognition tips. No signup required.",
   alternates: { canonical: "/games/whos-that-pokemon" },
   openGraph: {
     title: "Who's That Pokémon? — Free Guessing Game | PokePicker",
     description:
-      "Play the classic Who's That Pokémon guessing game for free. Identify Pokémon from their silhouettes and build your streak. No signup required.",
+      "Play the classic Who's That Pokémon guessing game for free. Identify all 1025 Pokémon from their silhouettes, build your streak, and learn shape-recognition tips. No signup required.",
   },
 };
 
@@ -25,44 +34,96 @@ export default function WhosThatPokemonPage() {
           Who&rsquo;s That Pokémon?
         </h1>
         <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted">
-          Guess the Pokémon from its silhouette. Pick the right name from four
-          options and build your streak!
+          {HERO_TAGLINE}
         </p>
       </section>
 
       <WhosThatPokemonClient />
 
-      {/* SEO content */}
+      {/* SEO: history */}
       <section className="mx-auto w-full max-w-3xl px-6 py-12">
         <h2 className="text-2xl font-bold text-foreground">
-          About Who&rsquo;s That Pokémon
+          The history of Who&rsquo;s That Pokémon
         </h2>
         <p className="mt-4 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-          &ldquo;Who&rsquo;s That Pokémon?&rdquo; is a beloved mini-game that
-          originated from the Pokémon anime series. In each commercial break,
-          viewers would see a silhouette of a Pokémon and try to guess its
-          identity before the reveal. Our version brings this classic game to
-          your browser with all 1025 Pokémon — from Bulbasaur to Pecharunt.
+          {HISTORY_TEXT}
         </p>
+      </section>
 
-        <h3 className="mt-8 text-lg font-bold text-foreground">How to play</h3>
-        <ul className="mt-2 list-disc gap-2 pl-5 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-          <li>Look at the black silhouette shown on screen</li>
-          <li>Choose the correct Pokémon name from four options</li>
-          <li>Correct answers increase your score and streak</li>
-          <li>Use Skip if you&rsquo;re stuck — a new Pokémon will appear</li>
-          <li>There&rsquo;s no time limit, so take your time and have fun!</li>
+      {/* SEO: how to play */}
+      <section className="mx-auto w-full max-w-3xl px-6 pb-12">
+        <h2 className="text-2xl font-bold text-foreground">How to play</h2>
+        <ul className="mt-4 list-disc gap-2 pl-5 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+          {HOW_TO_PLAY_STEPS.map((step) => (
+            <li key={step} className="mt-1">
+              {step}
+            </li>
+          ))}
         </ul>
+      </section>
 
-        <h3 className="mt-8 text-lg font-bold text-foreground">
-          Why play guessing games?
-        </h3>
-        <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-          Pokémon guessing games are a great way to test your knowledge of the
-          Pokédex and learn about species you might not have encountered before.
-          They&rsquo;re also perfect for sharing with friends — challenge
-          someone to beat your streak and see who knows more Pokémon!
+      {/* SEO: difficulty tiers */}
+      <section className="mx-auto w-full max-w-3xl px-6 pb-12">
+        <h2 className="text-2xl font-bold text-foreground">
+          Three difficulty tiers, from mascots to mysteries
+        </h2>
+        <div className="mt-4 divide-y divide-zinc-100">
+          {DIFFICULTY_TIERS.map((tier) => (
+            <div key={tier.title} className="py-4">
+              <h3 className="font-semibold text-foreground">{tier.title}</h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted">
+                {tier.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* SEO: identification tips */}
+      <section className="mx-auto w-full max-w-3xl px-6 pb-12">
+        <h2 className="text-2xl font-bold text-foreground">
+          How to identify any Pokémon by silhouette
+        </h2>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          {IDENTIFICATION_TIPS.map((tip) => (
+            <div
+              key={tip.title}
+              className="rounded-2xl border border-zinc-100 p-5 dark:border-zinc-800"
+            >
+              <h3 className="font-semibold text-foreground">{tip.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+                {tip.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* SEO: why play */}
+      <section className="mx-auto w-full max-w-3xl px-6 pb-12">
+        <h2 className="text-2xl font-bold text-foreground">
+          Why guessing games are good practice
+        </h2>
+        <p className="mt-4 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+          {WHY_PLAY_TEXT}
         </p>
+      </section>
+
+      {/* FAQ */}
+      <section className="mx-auto w-full max-w-3xl px-6 pb-12">
+        <h2 className="text-2xl font-bold text-foreground">
+          Frequently asked questions
+        </h2>
+        <div className="mt-4 divide-y divide-zinc-100">
+          {FAQ_ITEMS.map((item) => (
+            <div key={item.q} className="py-4">
+              <h3 className="font-semibold text-foreground">{item.q}</h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted">
+                {item.a}
+              </p>
+            </div>
+          ))}
+        </div>
       </section>
 
       <footer className="mt-auto border-t border-zinc-100">

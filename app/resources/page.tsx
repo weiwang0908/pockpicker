@@ -89,6 +89,74 @@ export default function ResourcesPage() {
           .
         </p>
 
+        {/* 原创评测方法：为什么这份清单可信 */}
+        <div className="mt-10 space-y-6">
+          <div>
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              How we evaluate tools
+            </h2>
+            <p className="mt-2">
+              Thousands of Pokémon fan tools exist, and most of them fail the
+              same three tests. Before anything earns a spot on this page, we
+              use it for at least two weeks and score it against the same
+              criteria we applied to PokePicker itself. First, speed to value:
+              a good tool does its job within seconds of landing on the page,
+              with no signup wall, no tutorial overlay, and no cookie maze
+              before the first click. Second, respect for data: tools that
+              demand accounts for features that plainly don&apos;t need one,
+              or that silently hoard more browser data than the feature
+              requires, get cut immediately. Third, craft: we look for the
+              small tells of genuine care — fast loads on mobile networks,
+              dark mode that doesn&apos;t break sprites, and error states that
+              don&apos;t leave you staring at a blank screen.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              What we deliberately avoid
+            </h2>
+            <p className="mt-2">
+              This page will never list ad-heavy re-skins of Bulbapedia
+              content, &ldquo;generators&rdquo; that are just a random name
+              picker with 12 popup ads, or sites that embed other
+              people&apos;s YouTube videos and call it content. We also skip
+              tools with paywalled basics — a random Pokémon picker behind a
+              subscription is not a product we can recommend with a straight
+              face. Every listing below passed the same two-week trial, and
+              we re-test the list quarterly; tools that decay, change hands,
+              or get stuffed with ads get removed without ceremony.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              Categories on this page
+            </h2>
+            <p className="mt-2">
+              <strong className="text-zinc-900 dark:text-zinc-100">Games</strong>{" "}
+              are playable daily puzzles — quick, self-contained rounds that
+              fit a coffee break, in the same spirit as our own{" "}
+              <a
+                href="/games/whos-that-pokemon"
+                className="font-medium text-brand underline underline-offset-2 hover:opacity-80"
+              >
+                Who&apos;s That Pokémon
+              </a>{" "}
+              game.{" "}
+              <strong className="text-zinc-900 dark:text-zinc-100">
+                Directories
+              </strong>{" "}
+              are where indie makers launch and discover each other&apos;s
+              work — we monitor them to keep track of the fan-tool ecosystem
+              and to find inspiration for PokePicker&apos;s own roadmap.{" "}
+              <strong className="text-zinc-900 dark:text-zinc-100">Tools</strong>{" "}
+              are utilities that solve a specific Pokémon problem well enough
+              that we stopped needing an alternative.
+            </p>
+          </div>
+        </div>
+
         <ul className="mt-8 space-y-6">
           {TOOLS.map((tool) => (
             <li

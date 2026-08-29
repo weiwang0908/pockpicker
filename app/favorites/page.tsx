@@ -3,7 +3,7 @@ import { SiteHeader } from "@/app/components/SiteHeader";
 import { FavoritesClient } from "./FavoritesClient";
 
 export const metadata: Metadata = {
-  title: "Your Favorite Pokémon — Saved Collection | PokePicker",
+  title: "Your Favorite Pokémon — Saved Collection",
   description:
     "View and manage your saved favorite Pokémon. No signup required — your collection is stored locally on your device.",
   alternates: { canonical: "/favorites" },

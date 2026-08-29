@@ -13,7 +13,9 @@ import type { Pokemon as CardPokemon } from '@/app/lib/type-data';
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: 'Random Pokemon Picker — All 1025 Pokémon, One Click | PokePicker',
+  // 顶层 title 不要手动加 "| PokePicker"——layout 的 title.template 会自动追加，
+  // 否则渲染成 "... | PokePicker | PokePicker"（OG/Twitter 不走模板，保留品牌后缀）。
+  title: 'Random Pokemon Picker — All 1025 Pokémon, One Click',
   description:
     'Free random Pokemon picker with all 1025 species. Pick by generation, type, legendary or shiny in one click — no signup.',
   alternates: { canonical: '/' },

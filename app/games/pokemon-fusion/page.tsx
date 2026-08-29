@@ -4,7 +4,7 @@ import { SiteHeader } from "@/app/components/SiteHeader";
 import { FusionClient } from "./FusionClient";
 
 export const metadata: Metadata = {
-  title: "Pokemon Fusion — Combine Two Pokémon Into One | PokePicker",
+  title: "Pokemon Fusion — Combine Two Pokémon Into One",
   description:
     "Fuse any two Pokémon together! Enter a head and body Pokémon to create a unique fusion with a combined name and types. Free, no signup required.",
   alternates: { canonical: "/games/pokemon-fusion" },

@@ -39,6 +39,12 @@ export function StaticPageLayout({ title, children }: StaticPageLayoutProps) {
             Privacy
           </Link>
           <Link
+            href="/terms"
+            className="transition-colors hover:text-zinc-800 dark:hover:text-zinc-200"
+          >
+            Terms
+          </Link>
+          <Link
             href="/contact"
             className="transition-colors hover:text-zinc-800 dark:hover:text-zinc-200"
           >

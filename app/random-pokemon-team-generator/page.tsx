@@ -8,7 +8,7 @@ import type { Pokemon as CardPokemon } from '@/app/lib/type-data';
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: 'Random Pokemon Team Generator | PokePicker',
+  title: 'Random Pokemon Team Generator — Build a Team of 6 in One Click',
   description:
     'Random Pokemon team generator: build a full team of 6 Pokémon in one click. Filter by generation, type, legendary or shiny. Free, no signup.',
   alternates: { canonical: '/random-pokemon-team-generator' },
@@ -259,7 +259,15 @@ export default async function TeamGeneratorPage() {
                 Pokemon type chart
               </Link>{' '}
               to understand your team&rsquo;s defensive weaknesses and offensive
-              coverage.
+              coverage. For a structured way to play with a rolled roster, read
+              our{' '}
+              <Link
+                href="/guides/nuzlocke-random-team-challenge"
+                className="text-brand underline"
+              >
+                Nuzlocke random team challenge guide
+              </Link>
+              .
             </p>
           </>
         }
